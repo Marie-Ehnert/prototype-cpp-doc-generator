@@ -1,0 +1,1 @@
+FUNCTION_DEFINITION_IDENTIFIER = "(function_definition declarator: (function_declarator declarator: (identifier) @name parameters: (parameter_list) @param))"
