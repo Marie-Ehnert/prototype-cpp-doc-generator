@@ -6,14 +6,18 @@ MEMBER_FUNCTION_DEFINITION_INSIDE = "((function_definition declarator: (referenc
 
 alles_zusammen ="""
 (function_definition declarator: [
-    (function_declarator declarator: (identifier) @name parameters: (parameter_list) @param)
-    (function_declarator declarator: (field_identifier) @name parameters: (parameter_list) @param)
-    (function_declarator declarator: (qualified_identifier) @name parameters: (parameter_list) @param)
-    (reference_declarator (function_declarator declarator: (qualified_identifier) @name parameters: (parameter_list) @param))
-    (reference_declarator (function_declarator declarator: (field_identifier) @name parameters: (parameter_list) @param)) 
+    (function_declarator declarator: (_) @name parameters: (parameter_list) @param)
+    (reference_declarator (function_declarator declarator: (_) @name parameters: (parameter_list) @param))
 ]) @all_lines
 """
 
 alles_zusammen_klassen ="""
-(class_specifier name: (type_identifier) @name body: (field_declaration_list (field_declaration type: (_)@type declarator: (field_identifier) @var ))) @all_lines
+(class_specifier name: (type_identifier) @name ) @class
+"""
+alles_zusammen_klassen_ecta ="""
+(class_specifier name: (type_identifier)* @name body: (field_declaration_list (field_declaration type: (_)@type declarator: (field_identifier) @var )))* @all_lines
+"""
+alles_zusammen_klassen_ect ="""
+(class_specifier name: (type_identifier) body: (field_declaration_list (field_declaration type: (_) declarator: (field_identifier) )@params))
+
 """

@@ -1,0 +1,679 @@
+[
+    {
+        "start_line": 15,
+        "end_line": 43,
+        "content": "class Logger\n{\n   public:\n      Logger(const string& name,const string& arguments = \"\"s):\n         m_name { name },m_arguments { arguments }\n      {\n         if constexpr (loggingActive)\n         {\n            string indentation(++m_activeFunctions,'>');\n            cout << indentation << ' '\n                 << m_name << ' '\n                 << m_arguments << endl;\n         }\n      }\n      ~Logger()\n      {\n         if constexpr (loggingActive)\n         {\n            string indentation(m_activeFunctions--,'<');\n            cout << indentation << ' '\n                 << m_name << ' '\n                 << m_arguments << endl;\n         }\n      }\n   private:\n      static inline size_t m_activeFunctions { 0 };\n      const string m_name { },\n                   m_arguments { };\n}",
+        "params": [
+            "static inline size_t m_activeFunctions { 0 };",
+            "const string m_name { },\n                   m_arguments { };"
+        ],
+        "name": "Logger",
+        "type": "class_def"
+    },
+    {
+        "start_line": 15,
+        "end_line": 43,
+        "content": "class Logger\n{\n   public:\n      Logger(const string& name,const string& arguments = \"\"s):\n         m_name { name },m_arguments { arguments }\n      {\n         if constexpr (loggingActive)\n         {\n            string indentation(++m_activeFunctions,'>');\n            cout << indentation << ' '\n                 << m_name << ' '\n                 << m_arguments << endl;\n         }\n      }\n      ~Logger()\n      {\n         if constexpr (loggingActive)\n         {\n            string indentation(m_activeFunctions--,'<');\n            cout << indentation << ' '\n                 << m_name << ' '\n                 << m_arguments << endl;\n         }\n      }\n   private:\n      static inline size_t m_activeFunctions { 0 };\n      const string m_name { },\n                   m_arguments { };\n}",
+        "params": [
+            "static inline size_t m_activeFunctions { 0 };",
+            "const string m_name { },\n                   m_arguments { };"
+        ],
+        "name": "Logger",
+        "type": "class_def"
+    },
+    {
+        "start_line": 53,
+        "end_line": 112,
+        "content": "class LegalAnswers\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_answers.size();\n      }\n      bool add(const string& answer)\n      {\n         m_answers.push_back(answer);\n         return true;\n      }\n      void setActive()\n      {\n         m_active = true;\n      }\n      [[nodiscard]] bool isActive() const\n      {\n         return m_active;\n      }\n      [[nodiscard]] bool isLegal(const string& answer) const\n      {\n         if (!isActive())\n         {\n            return true;\n         }\n         else\n         {\n            return (find(m_answers.begin(),m_answers.end(),answer) != \n                    m_answers.end());\n         }\n      }\n      void output() const\n      {\n         if (size() == 0)\n         {\n            return;\n         }\n         for (const auto& element : m_answers)\n         {\n            cout << element << endl;\n         }\n      }\n      void output(ostream& os) const\n      {\n         if (size() == 0)\n         {\n            return;\n         }\n         os << \"legalanswers are \"s;\n         for (const auto& element : m_answers)\n         {\n            os << element << ' ';\n         }\n         os << \"*\\n\"s << endl;\n      }\n   private:\n      vector<string> m_answers;\n      bool m_active { false };\n}",
+        "params": [
+            "vector<string> m_answers;",
+            "bool m_active { false };"
+        ],
+        "name": "LegalAnswers",
+        "type": "class_def"
+    },
+    {
+        "start_line": 53,
+        "end_line": 112,
+        "content": "class LegalAnswers\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_answers.size();\n      }\n      bool add(const string& answer)\n      {\n         m_answers.push_back(answer);\n         return true;\n      }\n      void setActive()\n      {\n         m_active = true;\n      }\n      [[nodiscard]] bool isActive() const\n      {\n         return m_active;\n      }\n      [[nodiscard]] bool isLegal(const string& answer) const\n      {\n         if (!isActive())\n         {\n            return true;\n         }\n         else\n         {\n            return (find(m_answers.begin(),m_answers.end(),answer) != \n                    m_answers.end());\n         }\n      }\n      void output() const\n      {\n         if (size() == 0)\n         {\n            return;\n         }\n         for (const auto& element : m_answers)\n         {\n            cout << element << endl;\n         }\n      }\n      void output(ostream& os) const\n      {\n         if (size() == 0)\n         {\n            return;\n         }\n         os << \"legalanswers are \"s;\n         for (const auto& element : m_answers)\n         {\n            os << element << ' ';\n         }\n         os << \"*\\n\"s << endl;\n      }\n   private:\n      vector<string> m_answers;\n      bool m_active { false };\n}",
+        "params": [
+            "vector<string> m_answers;",
+            "bool m_active { false };"
+        ],
+        "name": "LegalAnswers",
+        "type": "class_def"
+    },
+    {
+        "start_line": 114,
+        "end_line": 173,
+        "content": "class Variables\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_variables.size();\n      }\n      bool add(const string& variable)\n      {\n         for (const auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_variables.push_back(make_pair(variable,\"\"s));\n         return true;\n      }\n      bool set(const string& variable,const string& value)\n      {\n         for (auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               element.second = value;\n               return true;\n            }\n         }\n         return false;\n      }\n      [[nodiscard]] string get(const string& variable) const\n      {\n         for (const auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               return element.second;\n            }\n         }\n         return \"\"s;\n      }\n      void reset()\n      {\n         for (auto& element : m_variables)\n         {\n            element.second = \"\"s;\n         }\n      }\n      void output(ostream& os) const\n      {\n         for (const auto& element : m_variables)\n         {\n            os << element.first << \" is \"s \n               << element.second << endl;\n         }\n      }\n   private:\n      vector<pair<string,string>> m_variables;\n}",
+        "params": [
+            "vector<pair<string,string>> m_variables;"
+        ],
+        "name": "Variables",
+        "type": "class_def"
+    },
+    {
+        "start_line": 114,
+        "end_line": 173,
+        "content": "class Variables\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_variables.size();\n      }\n      bool add(const string& variable)\n      {\n         for (const auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_variables.push_back(make_pair(variable,\"\"s));\n         return true;\n      }\n      bool set(const string& variable,const string& value)\n      {\n         for (auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               element.second = value;\n               return true;\n            }\n         }\n         return false;\n      }\n      [[nodiscard]] string get(const string& variable) const\n      {\n         for (const auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               return element.second;\n            }\n         }\n         return \"\"s;\n      }\n      void reset()\n      {\n         for (auto& element : m_variables)\n         {\n            element.second = \"\"s;\n         }\n      }\n      void output(ostream& os) const\n      {\n         for (const auto& element : m_variables)\n         {\n            os << element.first << \" is \"s \n               << element.second << endl;\n         }\n      }\n   private:\n      vector<pair<string,string>> m_variables;\n}",
+        "params": [
+            "vector<pair<string,string>> m_variables;"
+        ],
+        "name": "Variables",
+        "type": "class_def"
+    },
+    {
+        "start_line": 175,
+        "end_line": 175,
+        "content": "class KnowledgeBase",
+        "params": [],
+        "name": "KnowledgeBase",
+        "type": "class_def"
+    },
+    {
+        "start_line": 175,
+        "end_line": 175,
+        "content": "class KnowledgeBase",
+        "params": [],
+        "name": "KnowledgeBase",
+        "type": "class_def"
+    },
+    {
+        "start_line": 177,
+        "end_line": 207,
+        "content": "class Questions\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_questions.size();\n      }\n      bool add(const string& variable,const string& subject)\n      {\n         for (const auto& element : m_questions)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_questions.push_back(make_pair(variable,subject));\n         return true;\n      }\n      void output(ostream& os) const\n      {\n         for (const auto& element : m_questions)\n         {\n            os << \"question \"s << element.first << \" is\\n\\\"\"s \n               << element.second << \"\\\"\\n\"s << endl;\n         }\n      }\n      bool ask(KnowledgeBase& kb,const string& variable);\n   private:\n      vector<pair<string,string>> m_questions;\n}",
+        "params": [
+            "vector<pair<string,string>> m_questions;"
+        ],
+        "name": "Questions",
+        "type": "class_def"
+    },
+    {
+        "start_line": 177,
+        "end_line": 207,
+        "content": "class Questions\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_questions.size();\n      }\n      bool add(const string& variable,const string& subject)\n      {\n         for (const auto& element : m_questions)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_questions.push_back(make_pair(variable,subject));\n         return true;\n      }\n      void output(ostream& os) const\n      {\n         for (const auto& element : m_questions)\n         {\n            os << \"question \"s << element.first << \" is\\n\\\"\"s \n               << element.second << \"\\\"\\n\"s << endl;\n         }\n      }\n      bool ask(KnowledgeBase& kb,const string& variable);\n   private:\n      vector<pair<string,string>> m_questions;\n}",
+        "params": [
+            "vector<pair<string,string>> m_questions;"
+        ],
+        "name": "Questions",
+        "type": "class_def"
+    },
+    {
+        "start_line": 209,
+        "end_line": 265,
+        "content": "class Rule\n{\n   public:\n      bool addCondition(const string& variable,const string& value)\n      {\n         for (const auto& element : m_conditions)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_conditions.push_back(make_pair(variable,value));\n         return true;\n      }\n      bool addConclusion(const string& variable,const string& value)\n      {\n         if (m_variable != \"\"s || m_value != \"\"s)\n         {\n            return false;\n         }\n         m_variable = variable;\n         m_value = value;\n         return true;\n      }\n      void output(ostream& os) const\n      {\n         // output if-part\n         os << \"IF\"s;\n         container_t::size_type count { 0 };\n         for (const auto& element : m_conditions)\n         {\n            os << \" \"s << element.first << \" IS \"s << element.second;\n            if (++count < m_conditions.size())\n            {\n               os << \"\\nand\"s;\n            }\n         }\n         // output then-part\n         os << \"\\nthen \"s << m_variable << \" is \"s << m_value << '\\n' << endl;\n      }\n      [[nodiscard]] bool isActive() const\n      {\n         return m_active;\n      }\n      void reset()\n      {\n         m_active = true;\n      }\n      bool prove(KnowledgeBase& kb,const string& variable);\n   private:\n      using container_t = vector<pair<string,string>>;\n      container_t m_conditions;\n      string m_variable { },\n             m_value { };\n      bool m_active { true };\n}",
+        "params": [
+            "container_t m_conditions;",
+            "string m_variable { },\n             m_value { };",
+            "bool m_active { true };"
+        ],
+        "name": "Rule",
+        "type": "class_def"
+    },
+    {
+        "start_line": 209,
+        "end_line": 265,
+        "content": "class Rule\n{\n   public:\n      bool addCondition(const string& variable,const string& value)\n      {\n         for (const auto& element : m_conditions)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_conditions.push_back(make_pair(variable,value));\n         return true;\n      }\n      bool addConclusion(const string& variable,const string& value)\n      {\n         if (m_variable != \"\"s || m_value != \"\"s)\n         {\n            return false;\n         }\n         m_variable = variable;\n         m_value = value;\n         return true;\n      }\n      void output(ostream& os) const\n      {\n         // output if-part\n         os << \"IF\"s;\n         container_t::size_type count { 0 };\n         for (const auto& element : m_conditions)\n         {\n            os << \" \"s << element.first << \" IS \"s << element.second;\n            if (++count < m_conditions.size())\n            {\n               os << \"\\nand\"s;\n            }\n         }\n         // output then-part\n         os << \"\\nthen \"s << m_variable << \" is \"s << m_value << '\\n' << endl;\n      }\n      [[nodiscard]] bool isActive() const\n      {\n         return m_active;\n      }\n      void reset()\n      {\n         m_active = true;\n      }\n      bool prove(KnowledgeBase& kb,const string& variable);\n   private:\n      using container_t = vector<pair<string,string>>;\n      container_t m_conditions;\n      string m_variable { },\n             m_value { };\n      bool m_active { true };\n}",
+        "params": [
+            "container_t m_conditions;",
+            "string m_variable { },\n             m_value { };",
+            "bool m_active { true };"
+        ],
+        "name": "Rule",
+        "type": "class_def"
+    },
+    {
+        "start_line": 267,
+        "end_line": 296,
+        "content": "class Rules\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_rules.size();\n      }\n      // No check for verbatim or semantic duplicates!\n      void add(const Rule& rule)\n      {\n         m_rules.push_back(rule);\n      }\n      void output(ostream& os) const\n      {\n         for (const auto& element : m_rules)\n         {\n            element.output(os);\n         }\n      }\n      void reset()\n      {\n         for (auto& element : m_rules)\n         {\n            element.reset();\n         }\n      }\n      bool prove(KnowledgeBase& kb,const string& variable);\n   private:\n      vector<Rule> m_rules;\n}",
+        "params": [
+            "vector<Rule> m_rules;"
+        ],
+        "name": "Rules",
+        "type": "class_def"
+    },
+    {
+        "start_line": 267,
+        "end_line": 296,
+        "content": "class Rules\n{\n   public:\n      [[nodiscard]] size_t size() const\n      {\n         return m_rules.size();\n      }\n      // No check for verbatim or semantic duplicates!\n      void add(const Rule& rule)\n      {\n         m_rules.push_back(rule);\n      }\n      void output(ostream& os) const\n      {\n         for (const auto& element : m_rules)\n         {\n            element.output(os);\n         }\n      }\n      void reset()\n      {\n         for (auto& element : m_rules)\n         {\n            element.reset();\n         }\n      }\n      bool prove(KnowledgeBase& kb,const string& variable);\n   private:\n      vector<Rule> m_rules;\n}",
+        "params": [
+            "vector<Rule> m_rules;"
+        ],
+        "name": "Rules",
+        "type": "class_def"
+    },
+    {
+        "start_line": 298,
+        "end_line": 699,
+        "content": "class KnowledgeBase\n{\n   public:\n      bool error(const string& message) const\n      {\n         cerr << message << endl;\n         return false;\n      }\n      [[nodiscard]] string inputToken(istream& is) const\n      {\n         string token;\n         is >> ws;\n         if (!is)\n         {\n            error(\"Unexpected end of file encountered in rule file.\"s);\n         }\n         if (is.peek() == '\\\"')\n         {\n            is.get(); // discard initial quote\n            while (is && is.peek() != '\\\"')\n            {\n               token += is.get();\n            }\n            if (is && is.peek() ==  '\\\"')\n            {\n               is.get(); // discard closing quote\n            }\n            if (token.length() > 80)\n            {\n               token = token.substr(0,80);\n            }\n         }\n         else\n         {\n            while (is && is.peek() > 32 && is.peek() != '\\\"')\n            {\n               token += toupper(is.get());\n            }\n            if (token.length() > 40)\n            {\n               token = token.substr(0,40);\n            };\n         };\n         return token;\n      }\n      bool inputIsAre(istream& is) const\n      {\n         string isAre { inputToken(is) }; \n         if (!is && isAre == \"\"s)\n         {\n            return false;\n         }\n      /* // with checking:  \n         if (isAre == \"IS\"s || isAre == \"ARE\"s)\n         { \n            return true;\n         }\n         else\n         {\n            return false;\n         }\n      */\n         return true;\n      }\n      bool inputVariableValue(istream& is,string& variable,string& value) const\n      {\n         // input variable\n         variable = inputToken(is);\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input value\n         value = inputToken(is);\n         if (!is && value == \"\"s)\n         {\n            return false;\n         }\n         return true;\n      }\n      bool inputLegalAnswers(istream& is)\n      {\n         if (m_legalAnswers.isActive())\n         {\n            return error(\"LEGALANSWERS have been specified more than once \"s +\n                         \"in the knowledge base.\"s);\n         }\n         m_legalAnswers.setActive();\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input legal answers including terminator *\n         string answer { };\n         do\n         {\n            answer = inputToken(is);\n            if (!is && answer == \"\"s)\n            {\n               return false;\n            }\n            if (answer != \"*\"s)\n            { \n               m_legalAnswers.add(answer);\n               if (m_legalAnswers.size() > 50)\n               {\n                  return error(\"Too many legalanswers encountered in the \"s +\n                               \"LEGALANSWERS rule.\"s);\n               }\n            };\n         } while (answer != \"*\"s);\n         return true;\n      }\n      bool inputGoal(istream& is)\n      {\n         if (m_goal != \"\"s)\n         {\n            return error(\"Goal encountered more than once in \"s +\n                         \"Knowledge Base.\"s);\n         }\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         m_goal = inputToken(is);\n         if (!is && m_goal == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(m_goal);\n         return true;\n      }\n      bool inputRule(istream& is)\n      {\n         string variable,\n                value,\n                token;\n         Rule rule;\n         // input if part\n         do\n         {\n            if (!inputVariableValue(is,variable,value))\n            {\n               return false;            \n            }\n            m_variables.add(variable);\n            rule.addCondition(variable,value);\n            ++m_ruleLines;\n            if (m_ruleLines >= 400)\n            {\n               return error(\"There are too many rules in the Knowledge Base \"s +\n                            \"for me.\"s);\n            }   \n            token = inputToken(is);\n            if (!is && token == \"\"s)\n            {\n               return false;\n            }\n         } while (token == \"AND\"s);\n         \n         // input then part\n         // if (token == \"THEN\") // ESIE accepts any token here; found \"the \"\n         // instead of \"then \" in \"ANIMAL\"\n         if (token != \"\"s)\n         {\n            if (!inputVariableValue(is,variable,value))\n            {\n               return false;\n            }\n            m_variables.add(variable);\n            ++m_ruleLines;\n            rule.addConclusion(variable,value);\n            m_rules.add(rule);\n            return true;\n         }\n         return false;\n      }\n      bool inputQuestion(istream& is)\n      {\n         if (m_questions.size() >= 100)\n         {\n            return error(\"There are too many questions in the \"s + \n                         \"Knowledge Base for me.\"s);\n         }\n         // input variable\n         string variable { inputToken(is) };\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input subject\n         string subject { inputToken(is) };\n         if (!is && subject == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(variable);\n         m_questions.add(variable,subject);\n         return true;\n      }\n      bool inputAnswer(istream& is)\n      {\n         if (m_answer.first != \"\"s || m_answer.second != \"\"s)\n         {\n            return error(\"Answer encountered more than once in \"s +\n                         \"Knowledge Base.\"s);\n         }\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         string subject { inputToken(is) };\n         if (!is && subject == \"\"s)\n         {\n            return false;\n         }\n         // input variable\n         string variable { inputToken(is) };\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(variable);\n         m_answer = make_pair(subject,variable);\n         return true;\n      }\n      bool input(istream& is)\n      {\n         while (is)\n         {\n            string token { inputToken(is) };\n            if (token == \"LEGALANSWERS\"s)\n            {\n               if (!inputLegalAnswers(is))\n               {\n                  return false;\n               };\n            }\n            else if (token == \"GOAL\"s)\n            {\n               inputGoal(is);\n            }\n            else if (token == \"IF\"s)\n            {\n               inputRule(is);\n            }\n            else if (token == \"QUESTION\"s)\n            {\n               inputQuestion(is);\n            }\n            else if (token == \"ANSWER\"s)\n            {\n              inputAnswer(is);\n            }\n            else if (token != \"\"s)\n            {\n               error (\"Invalid rule found in Knowledge Base.\\n\"s +\n                      \"Rule begins with: \"s + token);\n            };\n         }\n         bool goalAndAnswerFound { true };\n         if (m_goal == \"\"s)\n         {\n            error (\"Goal statement not found \"s +\n                   \"in the Knowledge Base.\"s);\n            goalAndAnswerFound = false;\n         }\n         if (m_answer.first == \"\" && m_answer.second == \"\")\n         {\n            error (\"Answer statement not found \"s +\n                   \"in the Knowledge Base.\"s);\n            goalAndAnswerFound = false;         \n         }\n         return goalAndAnswerFound;\n      }\n      void output(ostream& os)\n      {\n         os << \"goal is \"s << m_goal << endl << endl;\n         os << \"answer is \"s << '\\\"' << m_answer.first << \"\\\" \"s \n            << m_answer.second << endl << endl;\n         m_legalAnswers.output(os);\n         os << endl;\n         m_rules.output(os);\n         os << endl;\n         m_questions.output(os);\n      }\n      bool prove(const string& variable) \n      {\n         Logger log(\"KnowledgeBase::prove\"s,variable);\n         return m_rules.prove(*this,variable) || \n                m_questions.ask(*this,variable);\n      }\n      string inputCommand() const\n      {\n         string command;\n         bool isKnown { false };\n         do\n         {\n            cout << \"==>\"s << flush;\n            getline(cin,command);\n            command  = toupper(command);\n            if (command == \"TRACE ON\"s || command == \"TRACE OFF\"s ||\n                command == \"GO\"s || command == \"EXIT\"s)\n            {\n               isKnown = true;\n            }\n            else\n            {\n               error (\"I don't understand that command.\\n\\n\"s +\n                      \"Valid options are: \"s +\n                      \"TRACE ON, TRACE OFF, GO, and EXIT.\"s);\n            }\n         } while (isKnown == false);\n         return command;\n      }\n      void run()\n      {\n         string command;\n         do\n         {\n            command  = inputCommand();\n            if (command == \"TRACE ON\"s && m_tracing == false)\n            {\n               m_tracing = true;\n               report(\"There were \"s + to_string(m_ruleLines) + \n                      \" rule-lines, \"s +\n                      to_string(m_questions.size()) + \" questions and \"s + \n                      to_string(m_legalAnswers.size()) + \"\\nlegal answers \"s + \n                      \"specified in the knowledge base.\"s);\n            };\n            if (command == \"TRACE OFF\"s)\n            {\n               m_tracing = false;\n            };\n            if (command == \"GO\"s)\n            {\n               if (prove(m_goal))\n               {\n                  cout << m_answer.first << m_variables.get(m_answer.second) \n                       << endl << endl;\n               }\n               else\n               {\n                  cout << \"Error in Knowledge Base.\\n\"s\n                       << m_goal << \" searched for but not found.\\n\"s\n                       << m_answer.first << \"UNKNOWN\\n\"s << endl;\n               }\n               cout << \"I have completed this analysis.\"s << endl;\n               m_variables.reset();\n               m_rules.reset();\n            }\n         } while (command != \"EXIT\"s);\n         cout << \"Have a nice day!\"s << endl;\n      }\n      void report(const string& message) const \n      {\n         if (m_tracing)\n         {\n            cout << message << endl;\n         }\n      }\n      bool isLegalAnswer(const string& answer) const\n      {\n         return m_legalAnswers.isLegal(answer);\n      }\n      void outputLegalAnswers() const\n      {\n         m_legalAnswers.output();\n      }\n      bool setVariable(const string& variable,const string& value)\n      {\n         return m_variables.set(variable,value);\n      }\n      [[nodiscard]] string getValue(const string& variable) const\n      {\n         return m_variables.get(variable);\n      }\n      bool askValue(const string& variable)\n      {\n         return m_questions.ask(*this,variable);\n      }\n   private:\n      string m_goal;\n      pair<string,string> m_answer;\n      LegalAnswers m_legalAnswers;\n      Rules m_rules;\n      Questions m_questions;\n      Variables m_variables;\n      bool m_tracing { false };\n      size_t m_ruleLines { 0 };\n}",
+        "params": [
+            "string m_goal;",
+            "pair<string,string> m_answer;",
+            "LegalAnswers m_legalAnswers;",
+            "Rules m_rules;",
+            "Questions m_questions;",
+            "Variables m_variables;",
+            "bool m_tracing { false };",
+            "size_t m_ruleLines { 0 };"
+        ],
+        "name": "KnowledgeBase",
+        "type": "class_def"
+    },
+    {
+        "start_line": 298,
+        "end_line": 699,
+        "content": "class KnowledgeBase\n{\n   public:\n      bool error(const string& message) const\n      {\n         cerr << message << endl;\n         return false;\n      }\n      [[nodiscard]] string inputToken(istream& is) const\n      {\n         string token;\n         is >> ws;\n         if (!is)\n         {\n            error(\"Unexpected end of file encountered in rule file.\"s);\n         }\n         if (is.peek() == '\\\"')\n         {\n            is.get(); // discard initial quote\n            while (is && is.peek() != '\\\"')\n            {\n               token += is.get();\n            }\n            if (is && is.peek() ==  '\\\"')\n            {\n               is.get(); // discard closing quote\n            }\n            if (token.length() > 80)\n            {\n               token = token.substr(0,80);\n            }\n         }\n         else\n         {\n            while (is && is.peek() > 32 && is.peek() != '\\\"')\n            {\n               token += toupper(is.get());\n            }\n            if (token.length() > 40)\n            {\n               token = token.substr(0,40);\n            };\n         };\n         return token;\n      }\n      bool inputIsAre(istream& is) const\n      {\n         string isAre { inputToken(is) }; \n         if (!is && isAre == \"\"s)\n         {\n            return false;\n         }\n      /* // with checking:  \n         if (isAre == \"IS\"s || isAre == \"ARE\"s)\n         { \n            return true;\n         }\n         else\n         {\n            return false;\n         }\n      */\n         return true;\n      }\n      bool inputVariableValue(istream& is,string& variable,string& value) const\n      {\n         // input variable\n         variable = inputToken(is);\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input value\n         value = inputToken(is);\n         if (!is && value == \"\"s)\n         {\n            return false;\n         }\n         return true;\n      }\n      bool inputLegalAnswers(istream& is)\n      {\n         if (m_legalAnswers.isActive())\n         {\n            return error(\"LEGALANSWERS have been specified more than once \"s +\n                         \"in the knowledge base.\"s);\n         }\n         m_legalAnswers.setActive();\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input legal answers including terminator *\n         string answer { };\n         do\n         {\n            answer = inputToken(is);\n            if (!is && answer == \"\"s)\n            {\n               return false;\n            }\n            if (answer != \"*\"s)\n            { \n               m_legalAnswers.add(answer);\n               if (m_legalAnswers.size() > 50)\n               {\n                  return error(\"Too many legalanswers encountered in the \"s +\n                               \"LEGALANSWERS rule.\"s);\n               }\n            };\n         } while (answer != \"*\"s);\n         return true;\n      }\n      bool inputGoal(istream& is)\n      {\n         if (m_goal != \"\"s)\n         {\n            return error(\"Goal encountered more than once in \"s +\n                         \"Knowledge Base.\"s);\n         }\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         m_goal = inputToken(is);\n         if (!is && m_goal == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(m_goal);\n         return true;\n      }\n      bool inputRule(istream& is)\n      {\n         string variable,\n                value,\n                token;\n         Rule rule;\n         // input if part\n         do\n         {\n            if (!inputVariableValue(is,variable,value))\n            {\n               return false;            \n            }\n            m_variables.add(variable);\n            rule.addCondition(variable,value);\n            ++m_ruleLines;\n            if (m_ruleLines >= 400)\n            {\n               return error(\"There are too many rules in the Knowledge Base \"s +\n                            \"for me.\"s);\n            }   \n            token = inputToken(is);\n            if (!is && token == \"\"s)\n            {\n               return false;\n            }\n         } while (token == \"AND\"s);\n         \n         // input then part\n         // if (token == \"THEN\") // ESIE accepts any token here; found \"the \"\n         // instead of \"then \" in \"ANIMAL\"\n         if (token != \"\"s)\n         {\n            if (!inputVariableValue(is,variable,value))\n            {\n               return false;\n            }\n            m_variables.add(variable);\n            ++m_ruleLines;\n            rule.addConclusion(variable,value);\n            m_rules.add(rule);\n            return true;\n         }\n         return false;\n      }\n      bool inputQuestion(istream& is)\n      {\n         if (m_questions.size() >= 100)\n         {\n            return error(\"There are too many questions in the \"s + \n                         \"Knowledge Base for me.\"s);\n         }\n         // input variable\n         string variable { inputToken(is) };\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input subject\n         string subject { inputToken(is) };\n         if (!is && subject == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(variable);\n         m_questions.add(variable,subject);\n         return true;\n      }\n      bool inputAnswer(istream& is)\n      {\n         if (m_answer.first != \"\"s || m_answer.second != \"\"s)\n         {\n            return error(\"Answer encountered more than once in \"s +\n                         \"Knowledge Base.\"s);\n         }\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         string subject { inputToken(is) };\n         if (!is && subject == \"\"s)\n         {\n            return false;\n         }\n         // input variable\n         string variable { inputToken(is) };\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(variable);\n         m_answer = make_pair(subject,variable);\n         return true;\n      }\n      bool input(istream& is)\n      {\n         while (is)\n         {\n            string token { inputToken(is) };\n            if (token == \"LEGALANSWERS\"s)\n            {\n               if (!inputLegalAnswers(is))\n               {\n                  return false;\n               };\n            }\n            else if (token == \"GOAL\"s)\n            {\n               inputGoal(is);\n            }\n            else if (token == \"IF\"s)\n            {\n               inputRule(is);\n            }\n            else if (token == \"QUESTION\"s)\n            {\n               inputQuestion(is);\n            }\n            else if (token == \"ANSWER\"s)\n            {\n              inputAnswer(is);\n            }\n            else if (token != \"\"s)\n            {\n               error (\"Invalid rule found in Knowledge Base.\\n\"s +\n                      \"Rule begins with: \"s + token);\n            };\n         }\n         bool goalAndAnswerFound { true };\n         if (m_goal == \"\"s)\n         {\n            error (\"Goal statement not found \"s +\n                   \"in the Knowledge Base.\"s);\n            goalAndAnswerFound = false;\n         }\n         if (m_answer.first == \"\" && m_answer.second == \"\")\n         {\n            error (\"Answer statement not found \"s +\n                   \"in the Knowledge Base.\"s);\n            goalAndAnswerFound = false;         \n         }\n         return goalAndAnswerFound;\n      }\n      void output(ostream& os)\n      {\n         os << \"goal is \"s << m_goal << endl << endl;\n         os << \"answer is \"s << '\\\"' << m_answer.first << \"\\\" \"s \n            << m_answer.second << endl << endl;\n         m_legalAnswers.output(os);\n         os << endl;\n         m_rules.output(os);\n         os << endl;\n         m_questions.output(os);\n      }\n      bool prove(const string& variable) \n      {\n         Logger log(\"KnowledgeBase::prove\"s,variable);\n         return m_rules.prove(*this,variable) || \n                m_questions.ask(*this,variable);\n      }\n      string inputCommand() const\n      {\n         string command;\n         bool isKnown { false };\n         do\n         {\n            cout << \"==>\"s << flush;\n            getline(cin,command);\n            command  = toupper(command);\n            if (command == \"TRACE ON\"s || command == \"TRACE OFF\"s ||\n                command == \"GO\"s || command == \"EXIT\"s)\n            {\n               isKnown = true;\n            }\n            else\n            {\n               error (\"I don't understand that command.\\n\\n\"s +\n                      \"Valid options are: \"s +\n                      \"TRACE ON, TRACE OFF, GO, and EXIT.\"s);\n            }\n         } while (isKnown == false);\n         return command;\n      }\n      void run()\n      {\n         string command;\n         do\n         {\n            command  = inputCommand();\n            if (command == \"TRACE ON\"s && m_tracing == false)\n            {\n               m_tracing = true;\n               report(\"There were \"s + to_string(m_ruleLines) + \n                      \" rule-lines, \"s +\n                      to_string(m_questions.size()) + \" questions and \"s + \n                      to_string(m_legalAnswers.size()) + \"\\nlegal answers \"s + \n                      \"specified in the knowledge base.\"s);\n            };\n            if (command == \"TRACE OFF\"s)\n            {\n               m_tracing = false;\n            };\n            if (command == \"GO\"s)\n            {\n               if (prove(m_goal))\n               {\n                  cout << m_answer.first << m_variables.get(m_answer.second) \n                       << endl << endl;\n               }\n               else\n               {\n                  cout << \"Error in Knowledge Base.\\n\"s\n                       << m_goal << \" searched for but not found.\\n\"s\n                       << m_answer.first << \"UNKNOWN\\n\"s << endl;\n               }\n               cout << \"I have completed this analysis.\"s << endl;\n               m_variables.reset();\n               m_rules.reset();\n            }\n         } while (command != \"EXIT\"s);\n         cout << \"Have a nice day!\"s << endl;\n      }\n      void report(const string& message) const \n      {\n         if (m_tracing)\n         {\n            cout << message << endl;\n         }\n      }\n      bool isLegalAnswer(const string& answer) const\n      {\n         return m_legalAnswers.isLegal(answer);\n      }\n      void outputLegalAnswers() const\n      {\n         m_legalAnswers.output();\n      }\n      bool setVariable(const string& variable,const string& value)\n      {\n         return m_variables.set(variable,value);\n      }\n      [[nodiscard]] string getValue(const string& variable) const\n      {\n         return m_variables.get(variable);\n      }\n      bool askValue(const string& variable)\n      {\n         return m_questions.ask(*this,variable);\n      }\n   private:\n      string m_goal;\n      pair<string,string> m_answer;\n      LegalAnswers m_legalAnswers;\n      Rules m_rules;\n      Questions m_questions;\n      Variables m_variables;\n      bool m_tracing { false };\n      size_t m_ruleLines { 0 };\n}",
+        "params": [
+            "string m_goal;",
+            "pair<string,string> m_answer;",
+            "LegalAnswers m_legalAnswers;",
+            "Rules m_rules;",
+            "Questions m_questions;",
+            "Variables m_variables;",
+            "bool m_tracing { false };",
+            "size_t m_ruleLines { 0 };"
+        ],
+        "name": "KnowledgeBase",
+        "type": "class_def"
+    },
+    {
+        "content": "Logger(const string& name,const string& arguments = \"\"s):\n         m_name { name },m_arguments { arguments }\n      {\n         if constexpr (loggingActive)\n         {\n            string indentation(++m_activeFunctions,'>');\n            cout << indentation << ' '\n                 << m_name << ' '\n                 << m_arguments << endl;\n         }\n      }",
+        "start_line": 18,
+        "end_line": 28,
+        "type": "function_def",
+        "name": "Logger",
+        "params": [
+            "const string& name",
+            "const string& arguments = \"\"s"
+        ]
+    },
+    {
+        "content": "~Logger()\n      {\n         if constexpr (loggingActive)\n         {\n            string indentation(m_activeFunctions--,'<');\n            cout << indentation << ' '\n                 << m_name << ' '\n                 << m_arguments << endl;\n         }\n      }",
+        "start_line": 29,
+        "end_line": 38,
+        "type": "function_def",
+        "name": "~Logger",
+        "params": []
+    },
+    {
+        "content": "[[nodiscard]] string toupper(string s)\n{\n   for (char& c : s)\n      c = toupper(c);\n   return s;\n}",
+        "start_line": 46,
+        "end_line": 51,
+        "type": "function_def",
+        "name": "toupper",
+        "params": [
+            "string s"
+        ]
+    },
+    {
+        "content": "[[nodiscard]] size_t size() const\n      {\n         return m_answers.size();\n      }",
+        "start_line": 56,
+        "end_line": 59,
+        "type": "function_def",
+        "name": "size",
+        "params": []
+    },
+    {
+        "content": "bool add(const string& answer)\n      {\n         m_answers.push_back(answer);\n         return true;\n      }",
+        "start_line": 60,
+        "end_line": 64,
+        "type": "function_def",
+        "name": "add",
+        "params": [
+            "const string& answer"
+        ]
+    },
+    {
+        "content": "void setActive()\n      {\n         m_active = true;\n      }",
+        "start_line": 65,
+        "end_line": 68,
+        "type": "function_def",
+        "name": "setActive",
+        "params": []
+    },
+    {
+        "content": "[[nodiscard]] bool isActive() const\n      {\n         return m_active;\n      }",
+        "start_line": 69,
+        "end_line": 72,
+        "type": "function_def",
+        "name": "isActive",
+        "params": []
+    },
+    {
+        "content": "[[nodiscard]] bool isLegal(const string& answer) const\n      {\n         if (!isActive())\n         {\n            return true;\n         }\n         else\n         {\n            return (find(m_answers.begin(),m_answers.end(),answer) != \n                    m_answers.end());\n         }\n      }",
+        "start_line": 73,
+        "end_line": 84,
+        "type": "function_def",
+        "name": "isLegal",
+        "params": [
+            "const string& answer"
+        ]
+    },
+    {
+        "content": "void output() const\n      {\n         if (size() == 0)\n         {\n            return;\n         }\n         for (const auto& element : m_answers)\n         {\n            cout << element << endl;\n         }\n      }",
+        "start_line": 85,
+        "end_line": 95,
+        "type": "function_def",
+        "name": "output",
+        "params": []
+    },
+    {
+        "content": "void output(ostream& os) const\n      {\n         if (size() == 0)\n         {\n            return;\n         }\n         os << \"legalanswers are \"s;\n         for (const auto& element : m_answers)\n         {\n            os << element << ' ';\n         }\n         os << \"*\\n\"s << endl;\n      }",
+        "start_line": 96,
+        "end_line": 108,
+        "type": "function_def",
+        "name": "output",
+        "params": [
+            "ostream& os"
+        ]
+    },
+    {
+        "content": "[[nodiscard]] size_t size() const\n      {\n         return m_variables.size();\n      }",
+        "start_line": 117,
+        "end_line": 120,
+        "type": "function_def",
+        "name": "size",
+        "params": []
+    },
+    {
+        "content": "bool add(const string& variable)\n      {\n         for (const auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_variables.push_back(make_pair(variable,\"\"s));\n         return true;\n      }",
+        "start_line": 121,
+        "end_line": 132,
+        "type": "function_def",
+        "name": "add",
+        "params": [
+            "const string& variable"
+        ]
+    },
+    {
+        "content": "bool set(const string& variable,const string& value)\n      {\n         for (auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               element.second = value;\n               return true;\n            }\n         }\n         return false;\n      }",
+        "start_line": 133,
+        "end_line": 144,
+        "type": "function_def",
+        "name": "set",
+        "params": [
+            "const string& variable",
+            "const string& value"
+        ]
+    },
+    {
+        "content": "[[nodiscard]] string get(const string& variable) const\n      {\n         for (const auto& element : m_variables)\n         {\n            if (element.first == variable)\n            {\n               return element.second;\n            }\n         }\n         return \"\"s;\n      }",
+        "start_line": 145,
+        "end_line": 155,
+        "type": "function_def",
+        "name": "get",
+        "params": [
+            "const string& variable"
+        ]
+    },
+    {
+        "content": "void reset()\n      {\n         for (auto& element : m_variables)\n         {\n            element.second = \"\"s;\n         }\n      }",
+        "start_line": 156,
+        "end_line": 162,
+        "type": "function_def",
+        "name": "reset",
+        "params": []
+    },
+    {
+        "content": "void output(ostream& os) const\n      {\n         for (const auto& element : m_variables)\n         {\n            os << element.first << \" is \"s \n               << element.second << endl;\n         }\n      }",
+        "start_line": 163,
+        "end_line": 170,
+        "type": "function_def",
+        "name": "output",
+        "params": [
+            "ostream& os"
+        ]
+    },
+    {
+        "content": "[[nodiscard]] size_t size() const\n      {\n         return m_questions.size();\n      }",
+        "start_line": 180,
+        "end_line": 183,
+        "type": "function_def",
+        "name": "size",
+        "params": []
+    },
+    {
+        "content": "bool add(const string& variable,const string& subject)\n      {\n         for (const auto& element : m_questions)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_questions.push_back(make_pair(variable,subject));\n         return true;\n      }",
+        "start_line": 184,
+        "end_line": 195,
+        "type": "function_def",
+        "name": "add",
+        "params": [
+            "const string& variable",
+            "const string& subject"
+        ]
+    },
+    {
+        "content": "void output(ostream& os) const\n      {\n         for (const auto& element : m_questions)\n         {\n            os << \"question \"s << element.first << \" is\\n\\\"\"s \n               << element.second << \"\\\"\\n\"s << endl;\n         }\n      }",
+        "start_line": 196,
+        "end_line": 203,
+        "type": "function_def",
+        "name": "output",
+        "params": [
+            "ostream& os"
+        ]
+    },
+    {
+        "content": "bool addCondition(const string& variable,const string& value)\n      {\n         for (const auto& element : m_conditions)\n         {\n            if (element.first == variable)\n            {\n               return false;\n            }\n         }\n         m_conditions.push_back(make_pair(variable,value));\n         return true;\n      }",
+        "start_line": 212,
+        "end_line": 223,
+        "type": "function_def",
+        "name": "addCondition",
+        "params": [
+            "const string& variable",
+            "const string& value"
+        ]
+    },
+    {
+        "content": "bool addConclusion(const string& variable,const string& value)\n      {\n         if (m_variable != \"\"s || m_value != \"\"s)\n         {\n            return false;\n         }\n         m_variable = variable;\n         m_value = value;\n         return true;\n      }",
+        "start_line": 224,
+        "end_line": 233,
+        "type": "function_def",
+        "name": "addConclusion",
+        "params": [
+            "const string& variable",
+            "const string& value"
+        ]
+    },
+    {
+        "content": "void output(ostream& os) const\n      {\n         // output if-part\n         os << \"IF\"s;\n         container_t::size_type count { 0 };\n         for (const auto& element : m_conditions)\n         {\n            os << \" \"s << element.first << \" IS \"s << element.second;\n            if (++count < m_conditions.size())\n            {\n               os << \"\\nand\"s;\n            }\n         }\n         // output then-part\n         os << \"\\nthen \"s << m_variable << \" is \"s << m_value << '\\n' << endl;\n      }",
+        "start_line": 234,
+        "end_line": 249,
+        "type": "function_def",
+        "name": "output",
+        "params": [
+            "ostream& os"
+        ]
+    },
+    {
+        "content": "[[nodiscard]] bool isActive() const\n      {\n         return m_active;\n      }",
+        "start_line": 250,
+        "end_line": 253,
+        "type": "function_def",
+        "name": "isActive",
+        "params": []
+    },
+    {
+        "content": "void reset()\n      {\n         m_active = true;\n      }",
+        "start_line": 254,
+        "end_line": 257,
+        "type": "function_def",
+        "name": "reset",
+        "params": []
+    },
+    {
+        "content": "[[nodiscard]] size_t size() const\n      {\n         return m_rules.size();\n      }",
+        "start_line": 270,
+        "end_line": 273,
+        "type": "function_def",
+        "name": "size",
+        "params": []
+    },
+    {
+        "content": "void add(const Rule& rule)\n      {\n         m_rules.push_back(rule);\n      }",
+        "start_line": 275,
+        "end_line": 278,
+        "type": "function_def",
+        "name": "add",
+        "params": [
+            "const Rule& rule"
+        ]
+    },
+    {
+        "content": "void output(ostream& os) const\n      {\n         for (const auto& element : m_rules)\n         {\n            element.output(os);\n         }\n      }",
+        "start_line": 279,
+        "end_line": 285,
+        "type": "function_def",
+        "name": "output",
+        "params": [
+            "ostream& os"
+        ]
+    },
+    {
+        "content": "void reset()\n      {\n         for (auto& element : m_rules)\n         {\n            element.reset();\n         }\n      }",
+        "start_line": 286,
+        "end_line": 292,
+        "type": "function_def",
+        "name": "reset",
+        "params": []
+    },
+    {
+        "content": "bool error(const string& message) const\n      {\n         cerr << message << endl;\n         return false;\n      }",
+        "start_line": 301,
+        "end_line": 305,
+        "type": "function_def",
+        "name": "error",
+        "params": [
+            "const string& message"
+        ]
+    },
+    {
+        "content": "[[nodiscard]] string inputToken(istream& is) const\n      {\n         string token;\n         is >> ws;\n         if (!is)\n         {\n            error(\"Unexpected end of file encountered in rule file.\"s);\n         }\n         if (is.peek() == '\\\"')\n         {\n            is.get(); // discard initial quote\n            while (is && is.peek() != '\\\"')\n            {\n               token += is.get();\n            }\n            if (is && is.peek() ==  '\\\"')\n            {\n               is.get(); // discard closing quote\n            }\n            if (token.length() > 80)\n            {\n               token = token.substr(0,80);\n            }\n         }\n         else\n         {\n            while (is && is.peek() > 32 && is.peek() != '\\\"')\n            {\n               token += toupper(is.get());\n            }\n            if (token.length() > 40)\n            {\n               token = token.substr(0,40);\n            };\n         };\n         return token;\n      }",
+        "start_line": 306,
+        "end_line": 342,
+        "type": "function_def",
+        "name": "inputToken",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "bool inputIsAre(istream& is) const\n      {\n         string isAre { inputToken(is) }; \n         if (!is && isAre == \"\"s)\n         {\n            return false;\n         }\n      /* // with checking:  \n         if (isAre == \"IS\"s || isAre == \"ARE\"s)\n         { \n            return true;\n         }\n         else\n         {\n            return false;\n         }\n      */\n         return true;\n      }",
+        "start_line": 343,
+        "end_line": 361,
+        "type": "function_def",
+        "name": "inputIsAre",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "bool inputVariableValue(istream& is,string& variable,string& value) const\n      {\n         // input variable\n         variable = inputToken(is);\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input value\n         value = inputToken(is);\n         if (!is && value == \"\"s)\n         {\n            return false;\n         }\n         return true;\n      }",
+        "start_line": 362,
+        "end_line": 382,
+        "type": "function_def",
+        "name": "inputVariableValue",
+        "params": [
+            "istream& is",
+            "string& variable",
+            "string& value"
+        ]
+    },
+    {
+        "content": "bool inputLegalAnswers(istream& is)\n      {\n         if (m_legalAnswers.isActive())\n         {\n            return error(\"LEGALANSWERS have been specified more than once \"s +\n                         \"in the knowledge base.\"s);\n         }\n         m_legalAnswers.setActive();\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input legal answers including terminator *\n         string answer { };\n         do\n         {\n            answer = inputToken(is);\n            if (!is && answer == \"\"s)\n            {\n               return false;\n            }\n            if (answer != \"*\"s)\n            { \n               m_legalAnswers.add(answer);\n               if (m_legalAnswers.size() > 50)\n               {\n                  return error(\"Too many legalanswers encountered in the \"s +\n                               \"LEGALANSWERS rule.\"s);\n               }\n            };\n         } while (answer != \"*\"s);\n         return true;\n      }",
+        "start_line": 383,
+        "end_line": 416,
+        "type": "function_def",
+        "name": "inputLegalAnswers",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "bool inputGoal(istream& is)\n      {\n         if (m_goal != \"\"s)\n         {\n            return error(\"Goal encountered more than once in \"s +\n                         \"Knowledge Base.\"s);\n         }\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         m_goal = inputToken(is);\n         if (!is && m_goal == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(m_goal);\n         return true;\n      }",
+        "start_line": 417,
+        "end_line": 435,
+        "type": "function_def",
+        "name": "inputGoal",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "bool inputRule(istream& is)\n      {\n         string variable,\n                value,\n                token;\n         Rule rule;\n         // input if part\n         do\n         {\n            if (!inputVariableValue(is,variable,value))\n            {\n               return false;            \n            }\n            m_variables.add(variable);\n            rule.addCondition(variable,value);\n            ++m_ruleLines;\n            if (m_ruleLines >= 400)\n            {\n               return error(\"There are too many rules in the Knowledge Base \"s +\n                            \"for me.\"s);\n            }   \n            token = inputToken(is);\n            if (!is && token == \"\"s)\n            {\n               return false;\n            }\n         } while (token == \"AND\"s);\n         \n         // input then part\n         // if (token == \"THEN\") // ESIE accepts any token here; found \"the \"\n         // instead of \"then \" in \"ANIMAL\"\n         if (token != \"\"s)\n         {\n            if (!inputVariableValue(is,variable,value))\n            {\n               return false;\n            }\n            m_variables.add(variable);\n            ++m_ruleLines;\n            rule.addConclusion(variable,value);\n            m_rules.add(rule);\n            return true;\n         }\n         return false;\n      }",
+        "start_line": 436,
+        "end_line": 480,
+        "type": "function_def",
+        "name": "inputRule",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "bool inputQuestion(istream& is)\n      {\n         if (m_questions.size() >= 100)\n         {\n            return error(\"There are too many questions in the \"s + \n                         \"Knowledge Base for me.\"s);\n         }\n         // input variable\n         string variable { inputToken(is) };\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         // input is/are\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         // input subject\n         string subject { inputToken(is) };\n         if (!is && subject == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(variable);\n         m_questions.add(variable,subject);\n         return true;\n      }",
+        "start_line": 481,
+        "end_line": 508,
+        "type": "function_def",
+        "name": "inputQuestion",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "bool inputAnswer(istream& is)\n      {\n         if (m_answer.first != \"\"s || m_answer.second != \"\"s)\n         {\n            return error(\"Answer encountered more than once in \"s +\n                         \"Knowledge Base.\"s);\n         }\n         if (!inputIsAre(is))\n         {\n            return false;\n         }\n         string subject { inputToken(is) };\n         if (!is && subject == \"\"s)\n         {\n            return false;\n         }\n         // input variable\n         string variable { inputToken(is) };\n         if (!is && variable == \"\"s)\n         {\n            return false;\n         }\n         m_variables.add(variable);\n         m_answer = make_pair(subject,variable);\n         return true;\n      }",
+        "start_line": 509,
+        "end_line": 534,
+        "type": "function_def",
+        "name": "inputAnswer",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "bool input(istream& is)\n      {\n         while (is)\n         {\n            string token { inputToken(is) };\n            if (token == \"LEGALANSWERS\"s)\n            {\n               if (!inputLegalAnswers(is))\n               {\n                  return false;\n               };\n            }\n            else if (token == \"GOAL\"s)\n            {\n               inputGoal(is);\n            }\n            else if (token == \"IF\"s)\n            {\n               inputRule(is);\n            }\n            else if (token == \"QUESTION\"s)\n            {\n               inputQuestion(is);\n            }\n            else if (token == \"ANSWER\"s)\n            {\n              inputAnswer(is);\n            }\n            else if (token != \"\"s)\n            {\n               error (\"Invalid rule found in Knowledge Base.\\n\"s +\n                      \"Rule begins with: \"s + token);\n            };\n         }\n         bool goalAndAnswerFound { true };\n         if (m_goal == \"\"s)\n         {\n            error (\"Goal statement not found \"s +\n                   \"in the Knowledge Base.\"s);\n            goalAndAnswerFound = false;\n         }\n         if (m_answer.first == \"\" && m_answer.second == \"\")\n         {\n            error (\"Answer statement not found \"s +\n                   \"in the Knowledge Base.\"s);\n            goalAndAnswerFound = false;         \n         }\n         return goalAndAnswerFound;\n      }",
+        "start_line": 535,
+        "end_line": 583,
+        "type": "function_def",
+        "name": "input",
+        "params": [
+            "istream& is"
+        ]
+    },
+    {
+        "content": "void output(ostream& os)\n      {\n         os << \"goal is \"s << m_goal << endl << endl;\n         os << \"answer is \"s << '\\\"' << m_answer.first << \"\\\" \"s \n            << m_answer.second << endl << endl;\n         m_legalAnswers.output(os);\n         os << endl;\n         m_rules.output(os);\n         os << endl;\n         m_questions.output(os);\n      }",
+        "start_line": 584,
+        "end_line": 594,
+        "type": "function_def",
+        "name": "output",
+        "params": [
+            "ostream& os"
+        ]
+    },
+    {
+        "content": "bool prove(const string& variable) \n      {\n         Logger log(\"KnowledgeBase::prove\"s,variable);\n         return m_rules.prove(*this,variable) || \n                m_questions.ask(*this,variable);\n      }",
+        "start_line": 595,
+        "end_line": 600,
+        "type": "function_def",
+        "name": "prove",
+        "params": [
+            "const string& variable"
+        ]
+    },
+    {
+        "content": "string inputCommand() const\n      {\n         string command;\n         bool isKnown { false };\n         do\n         {\n            cout << \"==>\"s << flush;\n            getline(cin,command);\n            command  = toupper(command);\n            if (command == \"TRACE ON\"s || command == \"TRACE OFF\"s ||\n                command == \"GO\"s || command == \"EXIT\"s)\n            {\n               isKnown = true;\n            }\n            else\n            {\n               error (\"I don't understand that command.\\n\\n\"s +\n                      \"Valid options are: \"s +\n                      \"TRACE ON, TRACE OFF, GO, and EXIT.\"s);\n            }\n         } while (isKnown == false);\n         return command;\n      }",
+        "start_line": 601,
+        "end_line": 623,
+        "type": "function_def",
+        "name": "inputCommand",
+        "params": []
+    },
+    {
+        "content": "void run()\n      {\n         string command;\n         do\n         {\n            command  = inputCommand();\n            if (command == \"TRACE ON\"s && m_tracing == false)\n            {\n               m_tracing = true;\n               report(\"There were \"s + to_string(m_ruleLines) + \n                      \" rule-lines, \"s +\n                      to_string(m_questions.size()) + \" questions and \"s + \n                      to_string(m_legalAnswers.size()) + \"\\nlegal answers \"s + \n                      \"specified in the knowledge base.\"s);\n            };\n            if (command == \"TRACE OFF\"s)\n            {\n               m_tracing = false;\n            };\n            if (command == \"GO\"s)\n            {\n               if (prove(m_goal))\n               {\n                  cout << m_answer.first << m_variables.get(m_answer.second) \n                       << endl << endl;\n               }\n               else\n               {\n                  cout << \"Error in Knowledge Base.\\n\"s\n                       << m_goal << \" searched for but not found.\\n\"s\n                       << m_answer.first << \"UNKNOWN\\n\"s << endl;\n               }\n               cout << \"I have completed this analysis.\"s << endl;\n               m_variables.reset();\n               m_rules.reset();\n            }\n         } while (command != \"EXIT\"s);\n         cout << \"Have a nice day!\"s << endl;\n      }",
+        "start_line": 624,
+        "end_line": 662,
+        "type": "function_def",
+        "name": "run",
+        "params": []
+    },
+    {
+        "content": "void report(const string& message) const \n      {\n         if (m_tracing)\n         {\n            cout << message << endl;\n         }\n      }",
+        "start_line": 663,
+        "end_line": 669,
+        "type": "function_def",
+        "name": "report",
+        "params": [
+            "const string& message"
+        ]
+    },
+    {
+        "content": "bool isLegalAnswer(const string& answer) const\n      {\n         return m_legalAnswers.isLegal(answer);\n      }",
+        "start_line": 670,
+        "end_line": 673,
+        "type": "function_def",
+        "name": "isLegalAnswer",
+        "params": [
+            "const string& answer"
+        ]
+    },
+    {
+        "content": "void outputLegalAnswers() const\n      {\n         m_legalAnswers.output();\n      }",
+        "start_line": 674,
+        "end_line": 677,
+        "type": "function_def",
+        "name": "outputLegalAnswers",
+        "params": []
+    },
+    {
+        "content": "bool setVariable(const string& variable,const string& value)\n      {\n         return m_variables.set(variable,value);\n      }",
+        "start_line": 678,
+        "end_line": 681,
+        "type": "function_def",
+        "name": "setVariable",
+        "params": [
+            "const string& variable",
+            "const string& value"
+        ]
+    },
+    {
+        "content": "[[nodiscard]] string getValue(const string& variable) const\n      {\n         return m_variables.get(variable);\n      }",
+        "start_line": 682,
+        "end_line": 685,
+        "type": "function_def",
+        "name": "getValue",
+        "params": [
+            "const string& variable"
+        ]
+    },
+    {
+        "content": "bool askValue(const string& variable)\n      {\n         return m_questions.ask(*this,variable);\n      }",
+        "start_line": 686,
+        "end_line": 689,
+        "type": "function_def",
+        "name": "askValue",
+        "params": [
+            "const string& variable"
+        ]
+    },
+    {
+        "content": "int main()\n{\n   ifstream file { };\n   do\n   { \n      string name { },\n             answer { };\n      cout << \"File name where rules found?: \"s;\n      getline(cin,name);\n      file.open(name);\n      if (!file)\n      {\n         cout << \"File \\\"\"s << name << \"\\\" does not exist. \"s\n              << \"Do you wish to try again? (Y/N)\"s << flush;\n         do\n         {\n            getline(cin,answer);\n            answer = toupper(answer);\n         }\n         while ( answer != \"Y\"s && answer != \"N\"s);\n         if (answer == \"N\"s)\n         {\n            return 0;\n         }\n      }\n   } while (!file);\n   KnowledgeBase kb;\n   if (kb.input(file))\n   {\n      kb.run();\n   }\n}",
+        "start_line": 701,
+        "end_line": 732,
+        "type": "function_def",
+        "name": "main",
+        "params": []
+    },
+    {
+        "content": "bool Questions::ask(KnowledgeBase& kb,const string& variable)\n{\n   Logger log(\"Questions::ask\"s,variable);\n   for (const auto& question : m_questions)\n   {\n      if (question.first == variable)\n      {\n         string answer { };\n         bool ok { false };\n         do\n         {\n            cout << question.second << endl;\n            getline(cin,answer);\n            answer = toupper(answer);\n            if (kb.isLegalAnswer(answer))\n            {\n               kb.setVariable(question.first,answer);\n               kb.report(\"It has been learned that \"s + question.first +\n                         \"\\nis \"s + answer + \".\"s);\n               ok = true;\n            }\n            else\n            {\n               cout << \"I'm sorry, but your answer is not acceptable.\\n\"s\n                    << \"Please be sure you are typing the answer you \"s  \n                    << \"want fully and correctly,\\n\"s\n                    << \"and please choose your answer from one of these:\"s\n                    << endl;\n               kb.outputLegalAnswers();\n            }\n         } while (!ok);\n         return true;\n      }\n   }\n   return false;\n}",
+        "start_line": 734,
+        "end_line": 769,
+        "type": "function_def",
+        "name": "Questions::ask",
+        "params": [
+            "KnowledgeBase& kb",
+            "const string& variable"
+        ]
+    },
+    {
+        "content": "bool Rule::prove(KnowledgeBase& kb,const string& variable) \n{\n   Logger log(\"Rule::prove\"s,variable);\n   if (variable != m_variable)\n   {\n      return false;\n   }\n   for (const auto& condition : m_conditions)\n   {\n      string value { kb.getValue(condition.first) };\n      if (value == \"\"s)\n      {\n         if (!kb.prove(condition.first) && !kb.askValue(condition.first))\n         {\n            return false;\n         }\n         value = kb.getValue(condition.first);\n         kb.report(\"Currently looking for: \"s + variable + \".\"s);\n      }\n      if (value != condition.second)\n      {\n         return false;\n      }\n   }\n   kb.setVariable(m_variable,m_value);\n   kb.report(\"Currently looking for: \"s + variable + \".\"s);\n   kb.report(\"It has been learned that \"s + m_variable +\n             \"\\nis \"s + m_value + '.');\n   m_active = false;\n   return true;\n}",
+        "start_line": 771,
+        "end_line": 801,
+        "type": "function_def",
+        "name": "Rule::prove",
+        "params": [
+            "KnowledgeBase& kb",
+            "const string& variable"
+        ]
+    },
+    {
+        "content": "bool Rules::prove(KnowledgeBase& kb,const string& variable)\n{\n   Logger log(\"Rules::prove\"s,variable);\n   kb.report(\"Currently looking for: \"s + variable + \".\"s);\n   for (auto& rule : m_rules)\n   {\n      if (rule.isActive())\n      {   \n         if (rule.prove(kb,variable))\n         {\n            return true;\n         }\n      }\n   }\n   return false;\n}",
+        "start_line": 803,
+        "end_line": 818,
+        "type": "function_def",
+        "name": "Rules::prove",
+        "params": [
+            "KnowledgeBase& kb",
+            "const string& variable"
+        ]
+    }
+]
