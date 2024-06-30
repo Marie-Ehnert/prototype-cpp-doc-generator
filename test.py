@@ -6,6 +6,9 @@ import json
 
 parser = Parser(Language(tscpp.language()))
 
+rn_value = "/Users/mehnert/uni-leipzig/sources/RationalNumberClassValueSemantics.cpp"
+ec = "/Users/mehnert/uni-leipzig/sources/ec/EC.cpp"
+
 
 
 # TODO add error handling
@@ -22,9 +25,11 @@ def extract_function(node: Node):
     function_header = function_header_node.text.decode("utf8")
 
     if function_header_node.type == "reference_declarator":
-        function_identifier_node = function_header_node.child(0)
-    else: function_identifier_node = function_header_node.child_by_field_name("declarator")
-    function_identifier = function_identifier_node.text.decode("utf-8")
+        function_identifier_node = function_header_node.child(1).child_by_field_name("declarator")
+        function_identifier = function_identifier_node.text.decode("utf-8")
+    else: 
+        function_identifier_node = function_header_node.child_by_field_name("declarator")
+        function_identifier = function_identifier_node.text.decode("utf-8")
 
     functions_parameter_node = function_header_node.child_by_field_name("parameters")
     if functions_parameter_node:
@@ -58,7 +63,7 @@ def extract_class(node: Node):
             if child.type == "function_definition":
                 method = child.child_by_field_name("declarator").text.decode("utf-8")
                 methods.append(method)
-            elif child.type == "field_declaration":
+            elif child.type == "field_declaration" and child.child_by_field_name("declarator").type == "field_identifier":
                 attribute = child.text.decode("utf-8")
                 if "," in attribute:
                     multiple_attributes = attribute.split(",")
@@ -78,7 +83,7 @@ def extract_class(node: Node):
 
 
 def extract_definitions():
-    source_code_file = open("/Users/mehnert/uni-leipzig/sources/RationalNumberClassValueSemantics.cpp", "r", encoding="utf-8")
+    source_code_file = open(ec, "r", encoding="utf-8")
     code = source_code_file.read()
     tree = parser.parse(bytes(code, "utf8"))
     root_node = tree.root_node  
@@ -92,14 +97,12 @@ def extract_definitions():
         if node.type == "function_definition":
             function_def = extract_function(node)
             # Structure of a function tuple: ("function", type, name, [params], full header, start line, end line, code content)
-            print(function_def)
             definitions.append(function_def)
 
         elif node.type == "class_specifier":
             # guard to prevent extraction of class specifier without body
             if node.child_by_field_name("body"):
                 class_def = extract_class(node)
-                print(class_def)
                 # Structure of a class tuple: ("class", name, [attributes], [inline methods], start line, end line, code content)
                 definitions.append(class_def)
 

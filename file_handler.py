@@ -33,8 +33,13 @@ class FileHandler:
             function_header_node = node.child_by_field_name("declarator")
             function_header = function_header_node.text.decode("utf8")
 
-            function_identifier_node = function_header_node.child_by_field_name("declarator")
-            function_identifier = function_identifier_node.text.decode("utf-8")
+            if function_header_node.type == "reference_declarator":
+                function_identifier_node = function_header_node.child(1).child_by_field_name("declarator")
+                function_identifier = function_identifier_node.text.decode("utf-8")
+            else: 
+                function_identifier_node = function_header_node.child_by_field_name("declarator")
+                function_identifier = function_identifier_node.text.decode("utf-8")
+
 
             functions_parameter_node = function_header_node.child_by_field_name("parameters")
             if functions_parameter_node:
@@ -58,7 +63,7 @@ class FileHandler:
                     if child.type == "function_definition":
                         method = child.child_by_field_name("declarator").text.decode("utf-8")
                         methods.append(method)
-                    elif child.type == "field_declaration":
+                    elif child.type == "field_declaration" and child.child_by_field_name("declarator").type == "field_identifier":
                         attribute = child.text.decode("utf-8")
                         if "," in attribute:
                             multiple_attributes = attribute.split(",")
