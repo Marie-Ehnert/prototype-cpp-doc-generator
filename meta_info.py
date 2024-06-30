@@ -5,7 +5,7 @@ class MetaInfo:
     def __init__(self, file_handler: FileHandler):
         self.file_handler = file_handler
         self.code = file_handler.read_source_file()
-
+        
     def add_parent_relationships(self):
         tree = self.file_handler.generate_ast_from_source_code(self.code)
 

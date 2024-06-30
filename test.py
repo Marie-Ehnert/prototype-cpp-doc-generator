@@ -7,6 +7,7 @@ import json
 parser = Parser(Language(tscpp.language()))
 
 rn_value = "/Users/mehnert/uni-leipzig/sources/RationalNumberClassValueSemantics.cpp"
+rn_ref = "/Users/mehnert/uni-leipzig/sources/RationalNumberClassReferenceSemantics.cpp"
 ec = "/Users/mehnert/uni-leipzig/sources/ec/EC.cpp"
 
 
@@ -22,20 +23,26 @@ def extract_function(node: Node):
         function_type = function_type_node.text.decode("utf-8")
 
     function_header_node = node.child_by_field_name("declarator")
-    function_header = function_header_node.text.decode("utf8")
+    if not function_type:
+        function_header = function_header_node.text.decode("utf8")
+    else: function_header = f"{function_type} {function_header_node.text.decode("utf8")}"
 
     if function_header_node.type == "reference_declarator":
         function_identifier_node = function_header_node.child(1).child_by_field_name("declarator")
         function_identifier = function_identifier_node.text.decode("utf-8")
+        functions_parameter_node = function_identifier_node.child_by_field_name("parameters")
+        if functions_parameter_node:
+            for param in functions_parameter_node.children:
+                if param.type == "parameter_declaration":
+                    params.append(param.text.decode("utf-8"))
     else: 
         function_identifier_node = function_header_node.child_by_field_name("declarator")
         function_identifier = function_identifier_node.text.decode("utf-8")
-
-    functions_parameter_node = function_header_node.child_by_field_name("parameters")
-    if functions_parameter_node:
-        for param in functions_parameter_node.children:
-            if param.type == "parameter_declaration":
-                params.append(param.text.decode("utf-8"))
+        functions_parameter_node = function_header_node.child_by_field_name("parameters")
+        if functions_parameter_node:
+            for param in functions_parameter_node.children:
+                if param.type == "parameter_declaration":
+                    params.append(param.text.decode("utf-8"))
 
     return (
         "function",
@@ -81,6 +88,17 @@ def extract_class(node: Node):
         content,
     )
 
+def add_methods_outside_a_class(list: list[dict]):
+    for dictionary in list:
+        if "class" in dictionary.keys():
+            class_info = dictionary["class"]
+            name = class_info["class_name"]
+            for other_dictionary in list:
+                if "function" in other_dictionary.keys():
+                    func_info = other_dictionary["function"]
+                    method_name = func_info["identifier"]
+                    if f"{name}::" in method_name:
+                        class_info["methods"].append(func_info["header"])
 
 def extract_definitions():
     source_code_file = open(ec, "r", encoding="utf-8")
@@ -113,11 +131,14 @@ def extract_definitions():
     # Start walking the tree from the root node
     walk_tree_and_extract(root_node)
 
+
+
     return definitions
 
 
 definitions = extract_definitions()
-please = definition_tuple_list_to_dict_list(definitions)
+test = definition_tuple_list_to_dict_list(definitions)
+add_methods_outside_a_class(test)
 
 with open("meta.json", "w") as f:
-    json.dump(please, f)
+    json.dump(test, f)
