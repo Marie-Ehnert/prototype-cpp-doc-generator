@@ -1,0 +1,168 @@
+[
+    {
+        "class": {
+            "class_name": "RationalNumber",
+            "attributes": [
+                "[[nodiscard]] RationalNumber add(const RationalNumber& r) const;",
+                "[[nodiscard]] RationalNumber subtract(const RationalNumber& r) const;",
+                "[[nodiscard]] RationalNumber multiply(const RationalNumber& r) const;",
+                "[[nodiscard]] RationalNumber divide(const RationalNumber& r) const;",
+                "void output() const;",
+                "void normalize();",
+                "intmax_t  m_numerator { 0 }",
+                "/*! Holds denominator of rational number.\n       *  By default",
+                "denominator is initialized to 1.\n       */\n                m_denominator { 1 };"
+            ],
+            "methods": [
+                "RationalNumber(const intmax_t& n = 0, const intmax_t& d = 1)",
+                "& numerator() const",
+                "& denominator() const"
+            ],
+            "start_line": 24,
+            "end_line": 81,
+            "content": "class RationalNumber\n{\n   public:\n      /*! Constructs a normalized RationalNumber exemplar \n       * with n for m_numerator and d for d_denominator;\n       * default value for n is 0, \n       * default value for d is 1.\n       */\n      RationalNumber(const intmax_t& n = 0, const intmax_t& d = 1):\n         m_numerator { n }, m_denominator { d }\n      {\n         normalize();\n      }\n      /*! Returns m_numerator as reference to const.\n       */\n      [[nodiscard]] const intmax_t& numerator() const\n      {\n         return m_numerator;\n      }\n      /*! Returns m_denominator as reference to const.\n       */\n      [[nodiscard]] const intmax_t& denominator() const\n      {\n         return m_denominator;\n      }\n      /*! Adds rational numbers *this and r,\n       *  and returns result as value.\n       */\n      [[nodiscard]] RationalNumber add(const RationalNumber& r) const;\n      /*! Subtracts rational number r from *this,\n       *  and returns result as value.\n       */\n      [[nodiscard]] RationalNumber subtract(const RationalNumber& r) const;\n      /*! Multiplies rational numbers *this and r,\n       *  and returns result as value.\n       */\n      [[nodiscard]] RationalNumber multiply(const RationalNumber& r) const;\n      /*! Divides rational numbers *this by r,\n       *  and returns result as value.      \n       */\n      [[nodiscard]] RationalNumber divide(const RationalNumber& r) const;\n      /*! Outputs rational number to cout.\n       */\n      void output() const;\n   private:\n      /*! Normalizes rational number, \n       *  i.e., canonical form and m_denominator > 0.\n       */\n      void normalize();\n      /*! Holds numerator of rational number.\n       *  By default, numerator is initialized to 0.\n       */\n      intmax_t  m_numerator { 0 },\n      /*! Holds denominator of rational number.\n       *  By default, denominator is initialized to 1.\n       */\n                m_denominator { 1 };\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": null,
+            "identifier": "RationalNumber",
+            "parameters": [],
+            "header": "RationalNumber(const intmax_t& n = 0, const intmax_t& d = 1)",
+            "start_line": 32,
+            "end_line": 36,
+            "content": "RationalNumber(const intmax_t& n = 0, const intmax_t& d = 1):\n         m_numerator { n }, m_denominator { d }\n      {\n         normalize();\n      }"
+        }
+    },
+    {
+        "function": {
+            "return_type": "intmax_t",
+            "identifier": "&",
+            "parameters": [],
+            "header": "& numerator() const",
+            "start_line": 39,
+            "end_line": 42,
+            "content": "[[nodiscard]] const intmax_t& numerator() const\n      {\n         return m_numerator;\n      }"
+        }
+    },
+    {
+        "function": {
+            "return_type": "intmax_t",
+            "identifier": "&",
+            "parameters": [],
+            "header": "& denominator() const",
+            "start_line": 45,
+            "end_line": 48,
+            "content": "[[nodiscard]] const intmax_t& denominator() const\n      {\n         return m_denominator;\n      }"
+        }
+    },
+    {
+        "function": {
+            "return_type": "int",
+            "identifier": "main",
+            "parameters": [],
+            "header": "main()",
+            "start_line": 92,
+            "end_line": 125,
+            "content": "int main()\n{\n   cout << \"Helper functions ...\" << endl;\n   intmax_t m { }, n { };\n   cout << \"Enter m: \";\n   cin >> m;\n   cout << \"Enter n: \";\n   cin >> n;\n   cout << \"Sign of \" << m << \" = \" << sign(m) << endl;\n   cout << \"Sign of \" << n << \" = \" << sign(n) << endl;\n   \n   cout << \"\\n\\nRational number arithmetics ...\" \n        << endl;\n   cout << \"Enter 1st rational number\\n\";\n   RationalNumber a { inputRationalNumber() };\n   cout << \"Numerator (a) = \" << a.numerator()\n        << \"\\nDenominator (a) = \" << a.denominator()\n        << endl;\n   cout << \"Enter 2nd rational number\\n\";\n   RationalNumber b { inputRationalNumber() }; \n   cout << \"sum = \";\n   RationalNumber apb { a.add(b) };\n   apb.output();\n   cout << \"\\ndifference = \";\n   RationalNumber amb { a.subtract(b) };\n   amb.output();   \n   cout << \"\\nproduct = \";   \n   RationalNumber atb { a.multiply(b) };\n   atb.output();\n   cout << \"\\nquotient = \";\n   RationalNumber adb { a.divide(b) };\n   adb.output();\n   cout << endl;\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "intmax_t",
+            "identifier": "sign",
+            "parameters": [
+                "const intmax_t& n"
+            ],
+            "header": "sign(const intmax_t& n)",
+            "start_line": 127,
+            "end_line": 138,
+            "content": "intmax_t sign(const intmax_t& n)\n{\n   if (n < 0)\n   {\n      return -1;\n   }\n   if (n > 0)\n   {\n      return +1;\n   }\n   return 0;\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "RationalNumber",
+            "identifier": "RationalNumber::add",
+            "parameters": [
+                "const RationalNumber& r"
+            ],
+            "header": "RationalNumber::add(const RationalNumber& r) const",
+            "start_line": 140,
+            "end_line": 145,
+            "content": "RationalNumber RationalNumber::add(const RationalNumber& r) const\n{\n   return { m_numerator * r.m_denominator \n            + m_denominator * r.m_numerator,\n            m_denominator * r.m_denominator };\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "RationalNumber",
+            "identifier": "RationalNumber::subtract",
+            "parameters": [
+                "const RationalNumber& r"
+            ],
+            "header": "RationalNumber::subtract(const RationalNumber& r) const",
+            "start_line": 147,
+            "end_line": 152,
+            "content": "RationalNumber RationalNumber::subtract(const RationalNumber& r) const\n{\n   return { m_numerator * r.m_denominator \n            - m_denominator * r.m_numerator,\n            m_denominator * r.m_denominator };\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "RationalNumber",
+            "identifier": "RationalNumber::multiply",
+            "parameters": [
+                "const RationalNumber& r"
+            ],
+            "header": "RationalNumber::multiply(const RationalNumber& r) const",
+            "start_line": 154,
+            "end_line": 158,
+            "content": "RationalNumber RationalNumber::multiply(const RationalNumber& r) const\n{\n   return { m_numerator * r.m_numerator,\n            m_denominator * r.m_denominator };\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "RationalNumber",
+            "identifier": "RationalNumber::divide",
+            "parameters": [
+                "const RationalNumber& r"
+            ],
+            "header": "RationalNumber::divide(const RationalNumber& r) const",
+            "start_line": 160,
+            "end_line": 164,
+            "content": "RationalNumber  RationalNumber::divide(const RationalNumber& r) const\n{\n   return { m_numerator *  r.m_denominator,\n            m_denominator * r.m_numerator };\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "void",
+            "identifier": "RationalNumber::output",
+            "parameters": [],
+            "header": "RationalNumber::output() const",
+            "start_line": 166,
+            "end_line": 174,
+            "content": "void RationalNumber::output() const\n{\n   cout << '('\n        << m_numerator\n        << '/'\n        << m_denominator\n        << ')'\n        << flush;\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "void",
+            "identifier": "RationalNumber::normalize",
+            "parameters": [],
+            "header": "RationalNumber::normalize()",
+            "start_line": 176,
+            "end_line": 182,
+            "content": "void RationalNumber::normalize()\n{\n   intmax_t divisor = gcd(m_numerator,m_denominator);\n   m_numerator = sign(m_numerator) * sign(m_denominator) \n                 * abs(m_numerator) / divisor;\n   m_denominator = abs(m_denominator) / divisor;\n}"
+        }
+    },
+    {
+        "function": {
+            "return_type": "RationalNumber",
+            "identifier": "inputRationalNumber",
+            "parameters": [],
+            "header": "inputRationalNumber()",
+            "start_line": 184,
+            "end_line": 201,
+            "content": "RationalNumber inputRationalNumber()\n{\n   intmax_t numerator { 0 },\n            denominator { 1 };\n   cout << \"numerator: \" << flush;\n   cin >> numerator;\n   do\n   {\n      cout << \"denominator: \" << flush;\n      cin >> denominator;\n      if (denominator == 0)\n      {\n         cerr << \"Error, denominator may not be 0!\" \n              << endl;\n      }\n   } while (denominator == 0);\n   return RationalNumber { numerator, denominator };\n}"
+        }
+    }
+]
