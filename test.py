@@ -2,6 +2,7 @@ from tree_sitter import Language, Parser, Tree, Node
 import tree_sitter_cpp as tscpp
 from utils.helper_functions import definition_tuple_list_to_dict_list
 import json
+import re
 
 
 parser = Parser(Language(tscpp.language()))
@@ -27,10 +28,10 @@ def extract_function(node: Node):
         function_header = function_header_node.text.decode("utf8")
     else: function_header = f"{function_type} {function_header_node.text.decode("utf8")}"
 
-    if function_header_node.type == "reference_declarator":
-        function_identifier_node = function_header_node.child(1).child_by_field_name("declarator")
+    if function_header_node.type == "reference_declarator": #needed since the immediate declarator field name has two fields 1) reference_declarator and 2) function_declarator
+        function_identifier_node = function_header_node.child(1).child_by_field_name("declarator") 
         function_identifier = function_identifier_node.text.decode("utf-8")
-        functions_parameter_node = function_identifier_node.child_by_field_name("parameters")
+        functions_parameter_node = function_header_node.child(1).child_by_field_name("parameters")
         if functions_parameter_node:
             for param in functions_parameter_node.children:
                 if param.type == "parameter_declaration":
@@ -72,12 +73,14 @@ def extract_class(node: Node):
                 methods.append(method)
             elif child.type == "field_declaration" and child.child_by_field_name("declarator").type == "field_identifier":
                 attribute = child.text.decode("utf-8")
-                if "," in attribute:
-                    multiple_attributes = attribute.split(",")
+                attribute_edit = re.sub(r"/\*[^*]*\*+(?:[^/*][^*]*\*+)*/","", attribute) #removes multiline comments
+                attribute_edit_all_comments = re.sub(r"\/\/[^\n\r]+?(?:\*\)|[\n\r])", "", attribute_edit) #removes single line comments
+                if "," in attribute_edit_all_comments:
+                    multiple_attributes = attribute_edit_all_comments.split(",")
                     for item in multiple_attributes:
                         attributes.append(item.strip())
                 else:
-                    attributes.append(attribute)
+                    attributes.append(attribute_edit_all_comments)
     return (
         "class",
         class_name,
@@ -101,7 +104,7 @@ def add_methods_outside_a_class(list: list[dict]):
                         class_info["methods"].append(func_info["header"])
 
 def extract_definitions():
-    source_code_file = open(ec, "r", encoding="utf-8")
+    source_code_file = open(rn_ref, "r", encoding="utf-8")
     code = source_code_file.read()
     tree = parser.parse(bytes(code, "utf8"))
     root_node = tree.root_node  
