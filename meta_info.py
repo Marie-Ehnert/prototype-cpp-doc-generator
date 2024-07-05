@@ -8,19 +8,6 @@ class MetaInfo:
         self.code = file_handler.read_source_file()
         self.tree = file_handler.generate_ast_from_source_code(self.code)
         
-    # def add_parent_relationships(self, definitions: list[dict]):
-        
-
-    #     for definition in definitions:
-    #         if "class" in definition.keys:
-    #         for function_def in functions:
-    #             if function_def["start_line"] > class_def["start_line"] and function_def["end_line"] < class_def["end_line"]:
-    #                 class_def["methods"].append(function_def["name"])
-        
-    #     test = {}
-    #     test = classes
-    #     with open("meta.json", "w") as f:
-    #         json.dump(test,f)
 
     # TODO add error handling
     def extract_function(self, node: Node):
@@ -70,9 +57,16 @@ class MetaInfo:
         attributes = []
         methods = []
         content = node.text.decode("utf-8")
+        parent_class = None
 
         class_name_node = node.child_by_field_name("name")
         class_name = class_name_node.text.decode("utf8")
+
+        if class_name_node.next_sibling.type == "base_class_clause":
+            parent_class_node = class_name_node.next_sibling
+            for child in parent_class_node.children:
+                if child.type == "type_identifier":
+                    parent_class = child.text.decode("utf-8")
 
         class_body_node = node.child_by_field_name("body")
         if class_body_node:
@@ -93,6 +87,7 @@ class MetaInfo:
         return (
             "class",
             class_name,
+            parent_class,
             attributes,
             methods,
             node.start_point.row + 1,
@@ -112,6 +107,11 @@ class MetaInfo:
                         if f"{name}::" in method_name:
                             class_info["methods"].append(func_info["header"])
 
+    # def add_parent_relationship(self, definitions: list[dict]):
+    #     for definition in definitions:
+    #         for other_definition in definitions:
+    #             if "function" in definition.keys:
+
     # Entry point of global analysis
     def extract_definitions(self):
         # A list to store extracted information
@@ -130,7 +130,7 @@ class MetaInfo:
                 # guard to prevent extraction of class specifier without body
                 if node.child_by_field_name("body"):
                     class_def = self.extract_class(node)
-                    # Structure of a class tuple: ("class", name, [attributes], [inline methods], start line, end line, code content)
+                    # Structure of a class tuple: ("class", name, parent_class, [attributes], [inline methods], start line, end line, code content)
                     definitions.append(class_def)
 
             # Recursively visit all children of the node
@@ -140,6 +140,7 @@ class MetaInfo:
         # Start walking the tree from the root node
         walk_tree_and_extract(self, root_node)
 
+        # creates python list of dictionaries -> needs to be maintained if new key is added for the extraction
         definitions = definition_tuple_list_to_dict_list(definitions)
 
         self.add_methods_outside_a_class(definitions)

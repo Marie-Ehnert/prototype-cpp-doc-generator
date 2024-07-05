@@ -20,11 +20,12 @@ def definition_tuple_list_to_dict_list(list: list[tuple]):
             dict_list.append(function_dictionary)
         elif tuple[0] == "class":
             dictionary["class_name"] = tuple[1]
-            dictionary["attributes"] = tuple[2]
-            dictionary["methods"] = tuple[3]
-            dictionary["start_line"] = tuple[4]
-            dictionary["end_line"] = tuple[5]
-            dictionary["content"] = tuple[6]
+            dictionary["parent_class"] = tuple[2]
+            dictionary["attributes"] = tuple[3]
+            dictionary["methods"] = tuple[4]
+            dictionary["start_line"] = tuple[5]
+            dictionary["end_line"] = tuple[6]
+            dictionary["content"] = tuple[7]
             class_dictionary = dict()
             class_dictionary["class"] = dictionary
             dict_list.append(class_dictionary)
