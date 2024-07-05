@@ -14,6 +14,7 @@ class MetaInfo:
         content = node.text.decode("utf-8")
         params = []
         function_type = None
+        parent_class = None
 
         function_type_node = node.child_by_field_name("type")
         if function_type_node:
@@ -47,6 +48,7 @@ class MetaInfo:
             function_identifier,
             params,
             function_header,
+            parent_class,
             node.start_point.row + 1,
             node.end_point.row + 1,
             content,
@@ -97,20 +99,33 @@ class MetaInfo:
 
     def add_methods_outside_a_class(self, list: list[dict]):
         for dictionary in list:
-            if "class" in dictionary.keys():
+            if is_class(dictionary):
                 class_info = dictionary["class"]
                 name = class_info["class_name"]
                 for other_dictionary in list:
-                    if "function" in other_dictionary.keys():
+                    if is_function(other_dictionary):
                         func_info = other_dictionary["function"]
                         method_name = func_info["identifier"]
                         if f"{name}::" in method_name:
                             class_info["methods"].append(func_info["header"])
 
-    # def add_parent_relationship(self, definitions: list[dict]):
-    #     for definition in definitions:
-    #         for other_definition in definitions:
-    #             if "function" in definition.keys:
+    def add_parent_relationship_to_method_definitions_inside_class(self, definitions: list[dict]):
+        for function_definition in definitions:
+            if is_function(function_definition):
+                func_info = function_definition["function"]
+                for class_definition in definitions:
+                    if "class" in class_definition.keys():
+                        class_info = class_definition["class"]
+                        if is_function_def_inside_class_def(func_info, class_info):
+                            func_info["parent_class"] = class_info["class_name"]
+                        
+    def add_parent_relationship_to_method_definitions_outside_class(self, definitions: list[dict]):
+        for definition in definitions:
+            if is_function(definition):
+                func_info = definition["function"]
+                if "::" in func_info["identifier"]:
+                    match = re.findall(r".*(?=::)", func_info["identifier"])
+                    func_info["parent_class"] = match[0]
 
     # Entry point of global analysis
     def extract_definitions(self):
@@ -123,7 +138,7 @@ class MetaInfo:
 
             if node.type == "function_definition":
                 function_def = self.extract_function(node)
-                # Structure of a function tuple: ("function", type, name, [params], full header, start line, end line, code content)
+                # Structure of a function tuple: ("function", type, name, [params], full header, parent_class, start line, end line, code content)
                 definitions.append(function_def)
 
             elif node.type == "class_specifier":
@@ -144,5 +159,7 @@ class MetaInfo:
         definitions = definition_tuple_list_to_dict_list(definitions)
 
         self.add_methods_outside_a_class(definitions)
+        self.add_parent_relationship_to_method_definitions_inside_class(definitions)
+        self.add_parent_relationship_to_method_definitions_outside_class(definitions)
 
         return definitions
