@@ -21,18 +21,11 @@ MODELS = {
 @click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("gemma"))
 def cli(cpp_file, llm):
     file_handler = FileHandler(cpp_file)
-    # code = file_handler.read_source_file()
-    # tree = file_handler.generate_ast_from_source_code(code)
-    # functions = file_handler.extract_function_definitions(tree)
-    # classes = file_handler.extract_class_definitions(tree)
-    # classes_and_functions = append_list_items_to_list(classes, functions)
-    # test = {}
-    # test = classes_and_functions
-    # with open("code.json", "w") as f:
-    #     json.dump(test,f)
-
     meta_info = MetaInfo(file_handler)
-    meta_info.add_parent_relationships()
+    definitions = meta_info.extract_definitions()
+
+    with open("meta.json", "w") as f:
+        json.dump(definitions, f)
 
 if __name__ == "__main__":
     cli()
