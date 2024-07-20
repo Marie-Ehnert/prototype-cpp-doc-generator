@@ -1,9 +1,11 @@
+from chat_engine import ChatEngine
 from file_handler import FileHandler
 from meta_info import MetaInfo
 from utils.helper_functions import *  
 import click
 import json
 import toml
+from doc_item import *
 
 MODELS = {
     "llama3" :"llama3:latest",
@@ -34,9 +36,13 @@ def cli(cpp_file, llm):
     file_handler = FileHandler(cpp_file)
     meta_info = MetaInfo(file_handler)
     definitions = meta_info.extract_definitions()
+    doc_items = parse_definitions_to_doc_items(definitions)
+    chat_engine = ChatEngine(doc_items, llm)
+    chat_engine.send_request_to_llm()
 
-    with open("meta.json", "w") as f:
-        json.dump(definitions, f)
+
+    # with open("meta.json", "w") as f:
+    #     json.dump(definitions, f)
 
 if __name__ == "__main__":
     cli()

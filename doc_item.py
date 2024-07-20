@@ -17,7 +17,7 @@ class DocFunctionItem:
     content: str = ""
 
 @dataclass
-class DocFunctionClass:
+class DocClassItem:
     item_type: DocItemType.CLASS = ""
     obj_name: str = ""
     parent_name: str = ""
@@ -27,3 +27,17 @@ class DocFunctionClass:
     end_line: int = -1
     content: str = ""
 
+def parse_definitions_to_doc_items(definitions: list[dict]) -> list[DocFunctionItem | DocClassItem]:
+    doc_items = []
+    for item in definitions:
+        if "function" in item.keys():
+            function_def = item["function"]
+            doc_function_item = DocFunctionItem("function",function_def["identifier"], function_def["parent_class"], function_def["parameters"], function_def["return_type"], function_def["start_line"], function_def["end_line"], function_def["content"])
+            print(doc_function_item.obj_name)
+            doc_items.append(doc_function_item)
+        elif "class" in item.keys():
+            class_def = item["class"]
+            doc_class_item = DocClassItem("class",class_def["class_name"], class_def["parent_class"], class_def["attributes"], class_def["methods"], class_def["start_line"], class_def["end_line"], class_def["content"])
+            print(doc_class_item.obj_name)
+            doc_items.append(doc_class_item)
+    return doc_items
