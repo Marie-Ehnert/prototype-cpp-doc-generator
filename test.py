@@ -4,6 +4,8 @@ from utils.helper_functions import definition_tuple_list_to_dict_list
 import json
 import re
 
+import pydot
+
 
 parser = Parser(Language(tscpp.language()))
 
@@ -12,136 +14,50 @@ rn_ref = "/Users/mehnert/uni-leipzig/sources/RationalNumberClassReferenceSemanti
 ec = "/Users/mehnert/uni-leipzig/sources/ec/EC.cpp"
 
 
+def dot_to_json(dot_file_path, json_file_path):
+    # Parse the .dot file
+    graphs = pydot.graph_from_dot_file(dot_file_path)
+    graph = graphs[0]
 
-# TODO add error handling
-def extract_function(node: Node):
-    content = node.text.decode("utf-8")
-    params = []
-    function_type = None
+    # Initialize the data structure
+    data = {}
 
-    function_type_node = node.child_by_field_name("type")
-    if function_type_node:
-        function_type = function_type_node.text.decode("utf-8")
+    # Extract nodes and initialize the structure
+    for node in graph.get_nodes():
+        node_name = node.get_name().strip('"')
+        node_label = node.get_attributes().get('label', '').strip('"')
+        if node_label:
+            data[node_label] = {
+                'calls': [],
+                'called_by': []
+            }
+        elif node_name:  # Fallback to node name if label is not present
+            data[node_name] = {
+                'calls': [],
+                'called_by': []
+            }
 
-    function_header_node = node.child_by_field_name("declarator")
-    if not function_type:
-        function_header = function_header_node.text.decode("utf8")
-    else: function_header = f"{function_type} {function_header_node.text.decode("utf8")}"
+    # Extract edges and populate the structure
+    for edge in graph.get_edges():
+        source = edge.get_source().strip('"')
+        destination = edge.get_destination().strip('"')
+        
+        # Resolve the labels for source and destination nodes
+        source_label = graph.get_node(source)[0].get_attributes().get('label', '').strip('"')
+        destination_label = graph.get_node(destination)[0].get_attributes().get('label', '').strip('"')
 
-    if function_header_node.type == "reference_declarator": #needed since the immediate declarator field name has two fields 1) reference_declarator and 2) function_declarator
-        function_identifier_node = function_header_node.child(1).child_by_field_name("declarator") 
-        function_identifier = function_identifier_node.text.decode("utf-8")
-        functions_parameter_node = function_header_node.child(1).child_by_field_name("parameters")
-        if functions_parameter_node:
-            for param in functions_parameter_node.children:
-                if param.type == "parameter_declaration":
-                    params.append(param.text.decode("utf-8"))
-    else: 
-        function_identifier_node = function_header_node.child_by_field_name("declarator")
-        function_identifier = function_identifier_node.text.decode("utf-8")
-        functions_parameter_node = function_header_node.child_by_field_name("parameters")
-        if functions_parameter_node:
-            for param in functions_parameter_node.children:
-                if param.type == "parameter_declaration":
-                    params.append(param.text.decode("utf-8"))
+        if source_label and destination_label:
+            data[source_label]['calls'].append(destination_label)
+            data[destination_label]['called_by'].append(source_label)
+        elif source and destination:
+            data[source]['calls'].append(destination)
+            data[destination]['called_by'].append(source)
 
-    return (
-        "function",
-        function_type,
-        function_identifier,
-        params,
-        function_header,
-        node.start_point.row + 1,
-        node.end_point.row + 1,
-        content,
-    )
+    # Save to JSON file
+    with open(json_file_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
 
-
-def extract_class(node: Node):
-    attributes = []
-    methods = []
-    content = node.text.decode("utf-8")
-
-    class_name_node = node.child_by_field_name("name")
-    class_name = class_name_node.text.decode("utf8")
-
-    class_body_node = node.child_by_field_name("body")
-    if class_body_node:
-        for child in class_body_node.children:
-            if child.type == "function_definition":
-                method = child.child_by_field_name("declarator").text.decode("utf-8")
-                methods.append(method)
-            elif child.type == "field_declaration" and child.child_by_field_name("declarator").type == "field_identifier":
-                attribute = child.text.decode("utf-8")
-                attribute_edit = re.sub(r"/\*[^*]*\*+(?:[^/*][^*]*\*+)*/","", attribute) #removes multiline comments
-                attribute_edit_all_comments = re.sub(r"\/\/[^\n\r]+?(?:\*\)|[\n\r])", "", attribute_edit) #removes single line comments
-                if "," in attribute_edit_all_comments:
-                    multiple_attributes = attribute_edit_all_comments.split(",")
-                    for item in multiple_attributes:
-                        attributes.append(item.strip())
-                else:
-                    attributes.append(attribute_edit_all_comments)
-    return (
-        "class",
-        class_name,
-        attributes,
-        methods,
-        node.start_point.row + 1,
-        node.end_point.row + 1,
-        content,
-    )
-
-def add_methods_outside_a_class(list: list[dict]):
-    for dictionary in list:
-        if "class" in dictionary.keys():
-            class_info = dictionary["class"]
-            name = class_info["class_name"]
-            for other_dictionary in list:
-                if "function" in other_dictionary.keys():
-                    func_info = other_dictionary["function"]
-                    method_name = func_info["identifier"]
-                    if f"{name}::" in method_name:
-                        class_info["methods"].append(func_info["header"])
-
-def extract_definitions():
-    source_code_file = open(rn_ref, "r", encoding="utf-8")
-    code = source_code_file.read()
-    tree = parser.parse(bytes(code, "utf8"))
-    root_node = tree.root_node  
-
-    # A list to store extracted information
-    definitions = []
-
-    # Function to traverse the AST
-    def walk_tree_and_extract(node: Node):
-
-        if node.type == "function_definition":
-            function_def = extract_function(node)
-            # Structure of a function tuple: ("function", type, name, [params], full header, start line, end line, code content)
-            definitions.append(function_def)
-
-        elif node.type == "class_specifier":
-            # guard to prevent extraction of class specifier without body
-            if node.child_by_field_name("body"):
-                class_def = extract_class(node)
-                # Structure of a class tuple: ("class", name, [attributes], [inline methods], start line, end line, code content)
-                definitions.append(class_def)
-
-        # Recursively visit all children of the node
-        for child in node.children:
-            walk_tree_and_extract(child)
-
-    # Start walking the tree from the root node
-    walk_tree_and_extract(root_node)
-
-
-
-    return definitions
-
-
-definitions = extract_definitions()
-test = definition_tuple_list_to_dict_list(definitions)
-add_methods_outside_a_class(test)
-
-with open("meta.json", "w") as f:
-    json.dump(test, f)
+# Example usage
+dot_file_path = '/Users/mehnert/uni-leipzig/ec_test/doc/html/_e_c_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph.dot'  # Replace with your .dot file path
+json_file_path = 'output.json'  # Replace with your desired output path
+dot_to_json(dot_file_path, json_file_path)

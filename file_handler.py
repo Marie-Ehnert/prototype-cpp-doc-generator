@@ -1,5 +1,5 @@
 import tree_sitter_cpp as tscpp
-from tree_sitter import Language, Node, Parser, Tree, TreeCursor
+from tree_sitter import Language, Parser, Tree
 
 class FileHandler:
     def __init__(self, file_path):
