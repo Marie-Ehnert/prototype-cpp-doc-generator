@@ -3,6 +3,7 @@ from meta_info import MetaInfo
 from utils.helper_functions import *  
 import click
 import json
+import toml
 
 MODELS = {
     "llama3" :"llama3:latest",
@@ -20,6 +21,16 @@ MODELS = {
 @click.option("-f","--cpp-file" ,prompt= "Enter a file path", type=click.Path(exists=True), default="/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
 @click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("gemma"))
 def cli(cpp_file, llm):
+
+    #updates config file with model input
+    with open("chat_config.toml", "r") as f:
+        config = toml.load(f)
+    
+    config["chat_completion"]["model"] = llm
+
+    with open("chat_config.toml", "w") as f:
+        toml.dump(config, f)
+
     file_handler = FileHandler(cpp_file)
     meta_info = MetaInfo(file_handler)
     definitions = meta_info.extract_definitions()

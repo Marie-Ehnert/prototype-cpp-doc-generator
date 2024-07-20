@@ -1,0 +1,5 @@
+[chat_completion]
+model = "gemma"
+temperature = 0.2
+request_timeout = 60
+base_url = "https://api.openai.com/v1"
