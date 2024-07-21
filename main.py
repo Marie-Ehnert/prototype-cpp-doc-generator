@@ -7,10 +7,7 @@ import json
 import toml
 from doc_item import *
 
-MODELS = {
-    "llama3" :"llama3:latest",
-    "gemma" : "gemma:7b"
-}
+MODELS = ["llama3", "gemma:7b"]
 
 #file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
 # file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/RationalNumberClassValueSemantics.cpp")
@@ -21,7 +18,7 @@ MODELS = {
 
 @click.command()
 @click.option("-f","--cpp-file" ,prompt= "Enter a file path", type=click.Path(exists=True), default="/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
-@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("gemma"))
+@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("gemma:7b"))
 def cli(cpp_file, llm):
 
     #updates config file with model input
@@ -30,6 +27,8 @@ def cli(cpp_file, llm):
     
     config["chat_completion"]["model"] = llm
 
+    host = config["chat_completion"]["base_url"]
+
     with open("chat_config.toml", "w") as f:
         toml.dump(config, f)
 
@@ -37,8 +36,8 @@ def cli(cpp_file, llm):
     meta_info = MetaInfo(file_handler)
     definitions = meta_info.extract_definitions()
     doc_items = parse_definitions_to_doc_items(definitions)
-    chat_engine = ChatEngine(doc_items, llm)
-    chat_engine.send_request_to_llm()
+    chat_engine = ChatEngine(doc_items, llm, host)
+    chat_engine.send_request_to_llm("Your role is to be a trainer for personal workouts", "What should my diet include as to satisfy my protein needs? I struggle to find good sources of food that taste nice")
 
 
     # with open("meta.json", "w") as f:
