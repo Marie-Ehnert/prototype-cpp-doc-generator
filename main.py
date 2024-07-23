@@ -6,8 +6,9 @@ import click
 import json
 import toml
 from doc_item import *
+from prompt import USR_PROMPT
 
-MODELS = ["llama3", "gemma:7b"]
+MODELS = ["llama3", "gemma:7b", "deepseek-coder-v2:latest"]
 
 #file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
 # file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/RationalNumberClassValueSemantics.cpp")
@@ -18,7 +19,7 @@ MODELS = ["llama3", "gemma:7b"]
 
 @click.command()
 @click.option("-f","--cpp-file" ,prompt= "Enter a file path", type=click.Path(exists=True), default="/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
-@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("gemma:7b"))
+@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("deepseek-coder-v2:latest"))
 def cli(cpp_file, llm):
 
     #updates config file with model input
@@ -37,8 +38,10 @@ def cli(cpp_file, llm):
     definitions = meta_info.extract_definitions()
     doc_items = parse_definitions_to_doc_items(definitions)
     chat_engine = ChatEngine(doc_items, llm, host)
-    chat_engine.send_request_to_llm("Your role is to be a trainer for personal workouts", "What should my diet include as to satisfy my protein needs? I struggle to find good sources of food that taste nice")
 
+    prompt = chat_engine.enrich_template_prompt_with_meta_data(doc_items[2])
+    #chat_engine.send_request_to_llm(prompt, USR_PROMPT)
+    chat_engine.attempt_to_generate_documentation()
 
     # with open("meta.json", "w") as f:
     #     json.dump(definitions, f)
