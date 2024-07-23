@@ -130,37 +130,38 @@ class MetaInfo:
 
     # Entry point of global analysis
     def extract_definitions(self):
-        # A list to store extracted information
-        definitions = []
-        root_node = self.tree.root_node
+        try:
+            definitions = []
+            root_node = self.tree.root_node
 
-        # Function to traverse the AST
-        def walk_tree_and_extract(self, node: Node):
+            # Function to traverse the AST
+            def walk_tree_and_extract(self, node: Node):
 
-            if node.type == "function_definition":
-                function_def = self.extract_function(node)
-                # Structure of a function tuple: ("function", type, name, [params], full header, parent_class, start line, end line, code content)
-                definitions.append(function_def)
+                if node.type == "function_definition":
+                    function_def = self.extract_function(node)
+                    # Structure of a function tuple: ("function", type, name, [params], full header, parent_class, start line, end line, code content)
+                    definitions.append(function_def)
 
-            elif node.type == "class_specifier":
-                # guard to prevent extraction of class specifier without body
-                if node.child_by_field_name("body"):
-                    class_def = self.extract_class(node)
-                    # Structure of a class tuple: ("class", name, parent_class, [attributes], [inline methods], start line, end line, code content)
-                    definitions.append(class_def)
+                elif node.type == "class_specifier":
+                    # Guard to prevent extraction of class specifier without body
+                    if node.child_by_field_name("body"):
+                        class_def = self.extract_class(node)
+                        # Structure of a class tuple: ("class", name, parent_class, [attributes], [inline methods], start line, end line, code content)
+                        definitions.append(class_def)
 
-            # Recursively visit all children of the node
-            for child in node.children:
-                walk_tree_and_extract(self, child)
+                # Recursively visit all children of the node
+                for child in node.children:
+                    walk_tree_and_extract(self, child)
 
-        # Start walking the tree from the root node
-        walk_tree_and_extract(self, root_node)
+            # Start walking the tree from the root node
+            walk_tree_and_extract(self, root_node)
 
-        # creates python list of dictionaries -> needs to be maintained if new key is added for the extraction
-        definitions = definition_tuple_list_to_dict_list(definitions)
+            # creates python list of dictionaries -> needs to be maintained if new key is added for the extraction
+            definitions = definition_tuple_list_to_dict_list(definitions)
 
-        self.add_methods_outside_a_class(definitions)
-        self.add_parent_relationship_to_method_definitions_inside_class(definitions)
-        self.add_parent_relationship_to_method_definitions_outside_class(definitions)
+            self.add_methods_outside_a_class(definitions)
+            self.add_parent_relationship_to_method_definitions_inside_class(definitions)
+            self.add_parent_relationship_to_method_definitions_outside_class(definitions)
 
-        return definitions
+            return definitions
+        except: raise Exception("the global analaysis of your cpp code has thrown an exception!")

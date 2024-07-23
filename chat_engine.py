@@ -1,7 +1,8 @@
 from time import sleep
 from venv import logger
 from doc_item import *
-from ollama import Client
+import ollama
+from ollama import Client, ResponseError
 from prompt import SYS_PROMPT, USR_PROMPT
 from tqdm import tqdm
 
@@ -18,7 +19,7 @@ class ChatEngine:
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": usr_prompt},
         ]
-
+        
         response = client.chat(
             model= self.model,
             messages=messages
@@ -28,14 +29,14 @@ class ChatEngine:
         return response_message
     
     def attempt_to_generate_documentation(self):
-
+        # Adds a static heading to generated response
         def add_markdown_heading(item: DocClassItem | DocFunctionItem):
             if isinstance(item, DocFunctionItem) and item.parent_name != "":
                 return f"# method {item.obj_name} of {item.parent_name} \n"
             elif isinstance(item, DocFunctionItem) and item.parent_name == "":
                 return f"# {item.item_type} {item.obj_name}"
             else: return f"# {item.item_type} {item.obj_name} \n"
-        
+        # Adds a divider line to the end of the markdown
         def add_markdown_ending():
             return "***\n"
            
@@ -44,10 +45,14 @@ class ChatEngine:
             item_prompt = self.enrich_template_prompt_with_meta_data(item)
             pbar.set_description(f"Generating documentation - {item.item_type} {item.obj_name} ")
             heading = add_markdown_heading(item)
-            llm_response = self.send_request_to_llm(item_prompt, USR_PROMPT)
-
-            with open("docs.md", "a") as f:
-                f.write( heading + llm_response + "\n" + add_markdown_ending())
+            try:
+                llm_response = self.send_request_to_llm(item_prompt, USR_PROMPT)
+                with open("docs.md", "a") as f:
+                    f.write( heading + llm_response + "\n" + add_markdown_ending())
+            except ResponseError as e:
+                print("LLM-Backend Error: ", e)
+                continue
+        print("         --- The Generation of the documentation has been completed! ---")
 
 
     @staticmethod

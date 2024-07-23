@@ -8,7 +8,7 @@ import toml
 from doc_item import *
 from prompt import USR_PROMPT
 
-MODELS = ["llama3", "gemma:7b", "deepseek-coder-v2:latest"]
+MODELS = ["llama3", "gemma:7b", "deepseek-coder-v2:latest", "test"]
 
 #file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
 # file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/RationalNumberClassValueSemantics.cpp")
@@ -21,27 +21,30 @@ MODELS = ["llama3", "gemma:7b", "deepseek-coder-v2:latest"]
 @click.option("-f","--cpp-file" ,prompt= "Enter a file path", type=click.Path(exists=True), default="/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
 @click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("deepseek-coder-v2:latest"))
 def cli(cpp_file, llm):
-
-    #updates config file with model input
+    #click library already makes sure that the entered value is a valid file path!
     with open("chat_config.toml", "r") as f:
         config = toml.load(f)
-    
+    #sets the model
     config["chat_completion"]["model"] = llm
-
+    #retreives the url for the api
     host = config["chat_completion"]["base_url"]
-
+    #updates the config with the model input
     with open("chat_config.toml", "w") as f:
         toml.dump(config, f)
 
-    file_handler = FileHandler(cpp_file)
-    meta_info = MetaInfo(file_handler)
-    definitions = meta_info.extract_definitions()
-    doc_items = parse_definitions_to_doc_items(definitions)
-    chat_engine = ChatEngine(doc_items, llm, host)
+    try:
+        file_handler = FileHandler(cpp_file)
+        meta_info = MetaInfo(file_handler)
+        definitions = meta_info.extract_definitions()
+        doc_items = parse_definitions_to_doc_items(definitions)
+        chat_engine = ChatEngine(doc_items, llm, host)
 
-    prompt = chat_engine.enrich_template_prompt_with_meta_data(doc_items[2])
-    #chat_engine.send_request_to_llm(prompt, USR_PROMPT)
-    chat_engine.attempt_to_generate_documentation()
+        #prompt = chat_engine.enrich_template_prompt_with_meta_data(doc_items[2])
+        #chat_engine.send_request_to_llm(prompt, USR_PROMPT)
+        chat_engine.attempt_to_generate_documentation()
+    except Exception as error:
+        message = error.args[0]
+        print(message)
 
     # with open("meta.json", "w") as f:
     #     json.dump(definitions, f)
