@@ -20,7 +20,7 @@ def cli(cpp_file, llm):
         config = toml.load(f)
     #sets the model
     config["chat_completion"]["active_model"] = llm
-    #retreives the url for the api
+    #retreives the url for the llm api
     host = config["chat_completion"]["base_url"]
     #updates the config with the model input
     with open("chat_config.toml", "w") as f:
@@ -31,7 +31,7 @@ def cli(cpp_file, llm):
         meta_info = MetaInfo(file_handler)
         definitions = meta_info.extract_definitions()
         doc_items = parse_definitions_to_doc_items(definitions)
-        chat_engine = ChatEngine(doc_items, llm, host)
+        chat_engine = ChatEngine(doc_items, llm, host, file_handler.file_path)
         chat_engine.attempt_to_generate_documentation()
     except Exception as e:
          handle_exception(e)

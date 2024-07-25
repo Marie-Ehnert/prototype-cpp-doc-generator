@@ -1,4 +1,5 @@
-from time import sleep
+import datetime
+import os
 from doc_item import *
 import ollama
 import tiktoken
@@ -8,11 +9,12 @@ from tqdm import tqdm
 
 
 class ChatEngine:
-    def __init__(self, doc_items: list[DocClassItem | DocFunctionItem], model: str, host: str) -> None:
+    def __init__(self, doc_items: list[DocClassItem | DocFunctionItem], model: str, host: str, file_location: str) -> None:
         self.doc_items = doc_items
         self.model = model
         self.host = host
         self.max_tokens = self.get_max_tokens_from_model(self.model)
+        self.file_location = file_location
 
     @staticmethod
     def get_max_tokens_from_model(model: str):
@@ -54,17 +56,26 @@ class ChatEngine:
         # Adds a divider line to the end of the markdown
         def add_markdown_ending():
             return "***\n"
+        
+        def create_dynamic_markdown_file_name(source_file: str):
+            target_directory = os.path.dirname(source_file)
+            now = datetime.datetime.now()
+            dt_string = now.strftime("%d_%m_%Y_%H:%M:%S")
+            doc_name = f"{target_directory}/generated_docs_{dt_string}.md"
+            return doc_name
+
            
         pbar = tqdm(self.doc_items, ncols=150)
+        doc_path = create_dynamic_markdown_file_name(self.file_location)
         for item in pbar:
             item_prompt = self.enrich_template_prompt_with_meta_data(item)
             token_count = approximate_token_count(item_prompt)
-            pbar.set_description(f"Generating documentation - {item.item_type} {item.obj_name} | token count: {token_count}")
+            pbar.set_description(f"Generating documentation - {item.item_type} {item.obj_name} | token count {token_count}")
             heading = add_markdown_heading(item)
             if token_count <= self.max_tokens:
                 try:
                     llm_response = self.send_request_to_llm(item_prompt, USR_PROMPT)
-                    with open("docs.md", "a") as f:
+                    with open(doc_path, "a") as f:
                         f.write( heading + llm_response + "\n" + add_markdown_ending())
                 except ResponseError:
                     pass
@@ -76,7 +87,7 @@ class ChatEngine:
                     if truncated_token_count <= self.max_tokens:
                         try:
                             llm_response = self.send_request_to_llm(truncated_item_prompt, USR_PROMPT)
-                            with open("docs.md", "a") as f:
+                            with open(doc_path, "a") as f:
                                 f.write( heading + llm_response + "\n" + add_markdown_ending())
                         except ResponseError:
                             pass
