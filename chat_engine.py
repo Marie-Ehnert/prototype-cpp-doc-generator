@@ -48,10 +48,10 @@ class ChatEngine:
             
         # Adds a static heading to generated response
         def add_markdown_heading(item: DocClassItem | DocFunctionItem):
-            if isinstance(item, DocFunctionItem) and item.parent_name != "":
+            if isinstance(item, DocFunctionItem) and item.parent_name != None:
                 return f"# method {item.obj_name} of {item.parent_name} \n"
-            elif isinstance(item, DocFunctionItem) and item.parent_name == "":
-                return f"# {item.item_type} {item.obj_name}"
+            elif isinstance(item, DocFunctionItem) and item.parent_name == None:
+                return f"# {item.item_type} {item.obj_name} \n"
             else: return f"# {item.item_type} {item.obj_name} \n"
         # Adds a divider line to the end of the markdown
         def add_markdown_ending():
