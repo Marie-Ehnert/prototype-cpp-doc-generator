@@ -3,29 +3,23 @@ from file_handler import FileHandler
 from meta_info import MetaInfo
 from utils.helper_functions import *  
 import click
-import json
 import toml
 from doc_item import *
 from prompt import USR_PROMPT
 
-MODELS = ["llama3", "gemma:7b", "deepseek-coder-v2:latest", "test"]
-
-#file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
-# file_handler = FileHandler("/Users/mehnert/uni-leipzig/sources/RationalNumberClassValueSemantics.cpp")
-# code = file_handler.read_source_file()
-# tree = file_handler.generate_ast_from_source_code(code)
-
-# file_handler.extract_function_definitions(tree)
+with open("chat_config.toml", "r") as f:
+        config = toml.load(f)
+        models = config["configured_models"]["large_language_models"]
 
 @click.command()
 @click.option("-f","--cpp-file" ,prompt= "Enter a file path", type=click.Path(exists=True), default="/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
-@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(MODELS), default=("deepseek-coder-v2:latest"))
+@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(models), default=("deepseek-coder-v2:latest"))
 def cli(cpp_file, llm):
     #click library already makes sure that the entered value is a valid file path!
     with open("chat_config.toml", "r") as f:
         config = toml.load(f)
     #sets the model
-    config["chat_completion"]["model"] = llm
+    config["chat_completion"]["active_model"] = llm
     #retreives the url for the api
     host = config["chat_completion"]["base_url"]
     #updates the config with the model input
@@ -38,14 +32,11 @@ def cli(cpp_file, llm):
         definitions = meta_info.extract_definitions()
         doc_items = parse_definitions_to_doc_items(definitions)
         chat_engine = ChatEngine(doc_items, llm, host)
-
-        #prompt = chat_engine.enrich_template_prompt_with_meta_data(doc_items[2])
-        #chat_engine.send_request_to_llm(prompt, USR_PROMPT)
         chat_engine.attempt_to_generate_documentation()
-    except Exception as error:
-        message = error.args[0]
-        print(message)
-
+    except Exception as e:
+         handle_exception(e)
+        
+    # to inspect the extracted code analysis
     # with open("meta.json", "w") as f:
     #     json.dump(definitions, f)
 

@@ -1,5 +1,6 @@
 [chat_completion]
-model = "gemma"
-temperature = 0.2
-request_timeout = 60
-base_url = "https://api.openai.com/v1"
+active_model = "deepseek-coder-v2:latest"
+base_url = "http://localhost:1434"
+
+[configured_models]
+large_language_models = [ "llama3", "gemma:7b", "deepseek-coder-v2:latest", "test",]

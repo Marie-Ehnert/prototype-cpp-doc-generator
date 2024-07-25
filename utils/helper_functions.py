@@ -1,3 +1,7 @@
+import httpx
+from ollama import ResponseError
+
+
 def append_list_items_to_list(list_1: list, list_2: list):
     for item in list_2:
         list_1.append(item)
@@ -40,3 +44,11 @@ def is_function(definition: dict) -> bool:
 
 def is_function_def_inside_class_def(function_def: dict, class_def: dict) -> bool:
     return (function_def["start_line"] > class_def["start_line"] and function_def["end_line"] < class_def["end_line"])
+
+def handle_exception(e: Exception):
+    if isinstance(e, ResponseError):
+        print("Llm excpetion:", e.error, "\nstatus code:", e.status_code)
+    elif isinstance(e, TypeError):
+        print(e.args[0])
+    elif isinstance(e, httpx.ConnectError):
+        print("Llm exception: you failed to connect to the llm backend, please check that the url is a valid local ollama port")
