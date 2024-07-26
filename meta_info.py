@@ -2,6 +2,9 @@ from tree_sitter import Node
 from file_handler import *
 from utils.helper_functions import *  
 import re
+import json
+import os
+import pydot
 
 class MetaInfo:
     def __init__(self, file_handler: FileHandler):
@@ -127,6 +130,79 @@ class MetaInfo:
                 if "::" in func_info["identifier"]:
                     match = re.findall(r".*(?=::)", func_info["identifier"])
                     func_info["parent_class"] = match[0]
+    
+    def parse_dot_file(self, file_path):
+        # Dictionary to store the structure
+        graph_structure = {}
+
+        # Parse the DOT file using pydot
+        graphs = pydot.graph_from_dot_file(file_path)
+        if graphs:
+            graph = graphs[0]
+
+            # Process nodes
+            for node in graph.get_nodes():
+                node_name = node.get_name().strip('"').replace("\\", "")
+                node_label = node.get_label()
+                if not node_label:
+                    node_label = node_name
+                else:
+                    node_label = node_label.strip('"').replace("\\", "")
+
+                if node_label not in graph_structure:
+                    graph_structure[node_label] = {"callers": [], "callees": []}
+
+            # Process edges
+            for edge in graph.get_edges():
+                source = edge.get_source().strip('"')
+                destination = edge.get_destination().strip('"').replace("\\", "")
+
+                # Get labels if available, else use node names
+                source_label = graph.get_node(source)[0].get_label()
+                destination_label = graph.get_node(destination)[0].get_label()
+                if not source_label:
+                    source_label = source
+                else:
+                    source_label = source_label.strip('"').replace("\\", "")
+                if not destination_label:
+                    destination_label = destination
+                else:
+                    destination_label = destination_label.strip('"').replace("\\", "")
+
+                if source_label not in graph_structure:
+                    graph_structure[source_label] = {"callers": [], "callees": []}
+                if destination_label not in graph_structure:
+                    graph_structure[destination_label] = {"callers": [], "callees": []}
+
+                # Add the relationship
+                graph_structure[source_label]["callees"].append(destination_label)
+                graph_structure[destination_label]["callers"].append(source_label)
+
+        return graph_structure
+
+    def process_dot_files_in_directory(self, doxygen_directory_path: str):
+        combined_graph_structure = {}
+
+        for root, _, files in os.walk(doxygen_directory_path):
+            for file in files:
+                if file.endswith(".dot"):
+                    file_path = os.path.join(root, file)
+                    graph_structure = self.parse_dot_file(file_path)
+
+                    # Merge the graph structure into the combined structure
+                    for obj_name, relations in graph_structure.items():
+                        if obj_name not in combined_graph_structure:
+                            combined_graph_structure[obj_name] = {"callers": [], "callees": []}
+                        
+                        combined_graph_structure[obj_name]["callers"].extend(relations["callers"])
+                        combined_graph_structure[obj_name]["callees"].extend(relations["callees"])
+
+        # Remove duplicates from caller and callee lists
+        for obj_name in combined_graph_structure:
+            combined_graph_structure[obj_name]["callers"] = list(set(combined_graph_structure[obj_name]["callers"]))
+            combined_graph_structure[obj_name]["callees"] = list(set(combined_graph_structure[obj_name]["callees"]))
+
+        return combined_graph_structure
 
     # Entry point of global analysis
     def extract_definitions(self):

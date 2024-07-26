@@ -1,6 +1,10 @@
 [chat_completion]
-active_model = "llama3"
+active_model = "deepseek-coder-v2:latest"
 base_url = "http://localhost:11434"
 
 [configured_models]
 large_language_models = [ "llama3", "gemma:7b", "deepseek-coder-v2:latest", "test",]
+
+[doxygen_config]
+doxyfile_path = "/Users/mehnert/prototype-cpp-doc-generator/Doxyfile"
+doxygen_directory_path = "/Users/mehnert/prototype-cpp-doc-generator/doxygen_output"
