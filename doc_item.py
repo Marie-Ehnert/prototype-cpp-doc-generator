@@ -15,6 +15,8 @@ class DocFunctionItem:
     start_line: int = -1
     end_line: int = -1
     content: str = ""
+    callers: list = field(default_factory=list)
+    callees: list = field(default_factory=list)
 
 @dataclass
 class DocClassItem:
@@ -26,6 +28,8 @@ class DocClassItem:
     start_line: int = -1
     end_line: int = -1
     content: str = ""
+    callers: list = field(default_factory=list)
+    callees: list = field(default_factory=list)
 
 def parse_definitions_to_doc_items(definitions: list[dict]) -> list[DocFunctionItem | DocClassItem]:
     doc_items = []
@@ -39,3 +43,8 @@ def parse_definitions_to_doc_items(definitions: list[dict]) -> list[DocFunctionI
             doc_class_item = DocClassItem("class",class_def["class_name"], class_def["parent_class"], class_def["attributes"], class_def["methods"], class_def["start_line"], class_def["end_line"], class_def["content"])
             doc_items.append(doc_class_item)
     return doc_items
+
+def add_references_to_doc_items(references: dict, doc_items: list[DocFunctionItem | DocClassItem]):
+    for item in doc_items:
+        if isinstance(item, DocFunctionItem):
+            return
