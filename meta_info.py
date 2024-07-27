@@ -140,18 +140,6 @@ class MetaInfo:
         if graphs:
             graph = graphs[0]
 
-            # Process nodes
-            for node in graph.get_nodes():
-                node_name = node.get_name().strip('"').replace("\\", "")
-                node_label = node.get_label()
-                if not node_label:
-                    node_label = node_name
-                else:
-                    node_label = node_label.strip('"').replace("\\", "")
-
-                if node_label not in graph_structure:
-                    graph_structure[node_label] = {"callers": [], "callees": []}
-
             # Process edges
             for edge in graph.get_edges():
                 source = edge.get_source().strip('"')
@@ -175,8 +163,15 @@ class MetaInfo:
                     graph_structure[destination_label] = {"callers": [], "callees": []}
 
                 # Add the relationship
-                graph_structure[source_label]["callees"].append(destination_label)
-                graph_structure[destination_label]["callers"].append(source_label)
+                # if condition is neccesary because direction of the edge needs to be accounted for
+                # edges in DOT files have an attribute called "dir=back" which seems to be not checkable in pydot 
+                # for this reason this simple file path name check shall suffice
+                if not file_path.endswith("icgraph.dot"):
+                    graph_structure[source_label]["callees"].append(destination_label)
+                    graph_structure[destination_label]["callers"].append(source_label)
+                else:
+                    graph_structure[destination_label]["callees"].append(source_label)
+                    graph_structure[source_label]["callers"].append(destination_label)
 
         return graph_structure
 
