@@ -99,12 +99,26 @@ class ChatEngine:
 
     @staticmethod
     def enrich_template_prompt_with_meta_data(item: DocClassItem | DocFunctionItem):
+
+        parent_prompt = ""
+
+        if item.parent_name == None:
+            parent_prompt = f"\nThis c++ object has no parent relationship with other objects."
+        else: parent_prompt = f"\nThe parent c++ object of this ocject is {item.parent_name}."
+
         if isinstance(item, DocClassItem):
             methods = "\n".join(item.methods)
             attributes = "\n".join(item.attributes)
 
-            methods_prompt = f"""It also contains following methods:\n{methods}"""
+            methods_prompt = f"""\nIt also contains following methods:\n{methods}"""
+
+            if methods == "":
+                methods_prompt = f"\nThe {item.item_type} {item.obj_name} defines no methods."
+
             attributes_prompt = f"""The {item.item_type} {item.obj_name} contains the following attributes:\n{attributes}"""
+            
+            if attributes == "":
+                    attributes_prompt = f"""The {item.item_type} {item.obj_name} contains no attributes. \n"""
 
             prompt_data = {
             "code_type_tell": item.item_type,
@@ -112,20 +126,36 @@ class ChatEngine:
             "code_content": item.content,
             "actual_parameters_or_attributes": attributes_prompt,
             "methods": methods_prompt,
-            "combine_ref_situation": "",
+            "parent_relation": parent_prompt,
             "have_return_tell": "",
             "has_relationship": "",
             "reference_letter": "",
             "parameters_or_attribute": "attributes",
+            "example": "attribute"
             }
 
             sys_prompt = SYS_PROMPT.format(**prompt_data)
             return sys_prompt
         
         elif isinstance(item, DocFunctionItem):
+            def get_relationship_description(callers: list[str], callees: list[str]):
+                if (len(callers) != 0) and (len(callees) != 0):
+                    return f"And please include the reference relationship with its callers and callees in the project from a functional perspective: \nthe callers include: {", ".join(callers)} \nthe callees include {", ".join(callees)}"
+                elif (len(callers) != 0) and (len(callees) == 0):
+                    return f"And please include the relationship with its callers in the project from a functional perspective: \nthe callers include: {", ".join(callers)}"
+                elif (len(callers) == 0) and (len(callees) != 0):
+                    return f"And please include the relationship with its callees in the project from a functional perspective: \nthe callees include: {", ".join(callees)}"
+                else:
+                    return ""
+
             parameters = "\n".join(item.parameters)
 
-            parameters_prompt = f"""The {item.item_type} {item.obj_name} contains the following parameters:\n{parameters}"""
+            parameters_prompt = f"""\nThe {item.item_type} {item.obj_name} contains the following parameters:\n{parameters}"""
+
+            if parameters == "":
+                parameters_prompt = f"\nThe {item.item_type} {item.obj_name} takes no parameters."
+
+            reference_prompt = get_relationship_description(item.callers, item.callees)
 
             prompt_data = {
             "code_type_tell": item.item_type,
@@ -133,11 +163,12 @@ class ChatEngine:
             "code_content": item.content,
             "actual_parameters_or_attributes": parameters_prompt,
             "methods": "",
-            "combine_ref_situation": "",
-            "have_return_tell": item.return_type,
-            "has_relationship": "",
+            "parent_relation": parent_prompt,
+            "have_return_tell": f"The return type of this object: {item.return_type}",
+            "has_relationship": reference_prompt,
             "reference_letter": "",
             "parameters_or_attribute": "parameters",
+            "example": "parameter"
             }
 
             sys_prompt = SYS_PROMPT.format(**prompt_data)
@@ -145,12 +176,25 @@ class ChatEngine:
         
     @staticmethod
     def enrich_template_prompt_with_meta_data_without_the_code_content(item: DocClassItem):
+
+        parent_prompt = ""
+
+        if item.parent_name != None:
+            parent_prompt = f"This c++ object has no parent relationship with other objects."
+        else: parent_prompt = f"The parent c++ object of this ocject is {item.parent_name}."
        
         methods = "\n".join(item.methods)
         attributes = "\n".join(item.attributes)
 
-        methods_prompt = f"""It also contains following methods:\n{methods}"""
+        methods_prompt = f"""\nIt also contains following methods:\n{methods}"""
+
+        if methods == "":
+            methods_prompt = f"\nThe {item.item_type} {item.obj_name} defines no methods."
+
         attributes_prompt = f"""The {item.item_type} {item.obj_name} contains the following attributes:\n{attributes}"""
+            
+        if attributes == "":
+            attributes_prompt = f"""The {item.item_type} {item.obj_name} contains no attributes. \n"""
 
         prompt_data = {
         "code_type_tell": item.item_type,
@@ -158,11 +202,11 @@ class ChatEngine:
         "code_content": "The actual code content could not be provided! So please base your assumptions on the following information about the class!",
         "actual_parameters_or_attributes": attributes_prompt,
         "methods": methods_prompt,
-        "combine_ref_situation": "",
+        "parent_relation": parent_prompt,
         "have_return_tell": "",
         "has_relationship": "",
-        "reference_letter": "",
         "parameters_or_attribute": "attributes",
+        "example": "attribute"
         }
 
         sys_prompt = SYS_PROMPT.format(**prompt_data)
