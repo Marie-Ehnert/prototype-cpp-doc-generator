@@ -28,8 +28,6 @@ class DocClassItem:
     start_line: int = -1
     end_line: int = -1
     content: str = ""
-    callers: list = field(default_factory=list)
-    callees: list = field(default_factory=list)
 
 def parse_definitions_to_doc_items(definitions: list[dict]) -> list[DocFunctionItem | DocClassItem]:
     doc_items = []
@@ -44,7 +42,25 @@ def parse_definitions_to_doc_items(definitions: list[dict]) -> list[DocFunctionI
             doc_items.append(doc_class_item)
     return doc_items
 
-def add_references_to_doc_items(references: dict, doc_items: list[DocFunctionItem | DocClassItem]):
-    for item in doc_items:
+def add_references_to_doc_items(objects_with_callers_callees: dict, doc_items_without_references: list[DocFunctionItem | DocClassItem]):
+    for item in doc_items_without_references:
         if isinstance(item, DocFunctionItem):
-            return
+            if f"{item.parent_name}::" in item.obj_name:
+                for object in objects_with_callers_callees:
+                     if item.obj_name == object:
+                         callers_callees = objects_with_callers_callees.get(f"{object}")
+                         item.callers = callers_callees.get("callers")
+                         item.callees = callers_callees.get("callees")
+            elif item.parent_name == None:
+                for object in objects_with_callers_callees:
+                     if item.obj_name == object:
+                         callers_callees = objects_with_callers_callees.get(f"{object}")
+                         item.callers = callers_callees.get("callers")
+                         item.callees = callers_callees.get("callees")
+            elif item.parent_name != None:
+                for object in objects_with_callers_callees:
+                     if f"{item.parent_name}::{item.obj_name}" == object:
+                         callers_callees = objects_with_callers_callees.get(f"{object}")
+                         item.callers = callers_callees.get("callers")
+                         item.callees = callers_callees.get("callees")
+                
