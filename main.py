@@ -5,7 +5,6 @@ from utils.helper_functions import *
 import click
 import toml
 from doc_item import *
-from prompt import USR_PROMPT
 
 with open("chat_config.toml", "r") as f:
         config = toml.load(f)

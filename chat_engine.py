@@ -106,11 +106,13 @@ class ChatEngine:
             parent_prompt = f"\nThis c++ object has no parent relationship with other objects."
         else: parent_prompt = f"\nThe parent c++ object of this ocject is {item.parent_name}."
 
+        # formats prompts for classes
         if isinstance(item, DocClassItem):
             methods = "\n".join(item.methods)
             attributes = "\n".join(item.attributes)
 
             methods_prompt = f"""\nIt also contains following methods:\n{methods}"""
+            method_template =  f"**methods**: The methods of this class.\n* method1: XXX\n* method2: XXX\n* ..."
 
             if methods == "":
                 methods_prompt = f"\nThe {item.item_type} {item.obj_name} defines no methods."
@@ -119,6 +121,7 @@ class ChatEngine:
             
             if attributes == "":
                     attributes_prompt = f"""The {item.item_type} {item.obj_name} contains no attributes. \n"""
+
 
             prompt_data = {
             "code_type_tell": item.item_type,
@@ -131,12 +134,14 @@ class ChatEngine:
             "has_relationship": "",
             "reference_letter": "",
             "parameters_or_attribute": "attributes",
-            "example": "attribute"
+            "example": "attribute",
+            "method_template": method_template
             }
 
             sys_prompt = SYS_PROMPT.format(**prompt_data)
             return sys_prompt
         
+        #formats prompts for functions and methods
         elif isinstance(item, DocFunctionItem):
             def get_relationship_description(callers: list[str], callees: list[str]):
                 if (len(callers) != 0) and (len(callees) != 0):
@@ -168,7 +173,8 @@ class ChatEngine:
             "has_relationship": reference_prompt,
             "reference_letter": "",
             "parameters_or_attribute": "parameters",
-            "example": "parameter"
+            "example": "parameter",
+            "method_template": ""
             }
 
             sys_prompt = SYS_PROMPT.format(**prompt_data)
@@ -176,7 +182,7 @@ class ChatEngine:
         
     @staticmethod
     def enrich_template_prompt_with_meta_data_without_the_code_content(item: DocClassItem):
-
+        # formats prompts for truncated classes
         parent_prompt = ""
 
         if item.parent_name != None:
@@ -187,6 +193,7 @@ class ChatEngine:
         attributes = "\n".join(item.attributes)
 
         methods_prompt = f"""\nIt also contains following methods:\n{methods}"""
+        method_template =  f"**methods**: The methods of this class.\n* method1: XXX\n* method2: XXX\n* ..."
 
         if methods == "":
             methods_prompt = f"\nThe {item.item_type} {item.obj_name} defines no methods."
@@ -206,7 +213,8 @@ class ChatEngine:
         "have_return_tell": "",
         "has_relationship": "",
         "parameters_or_attribute": "attributes",
-        "example": "attribute"
+        "example": "attribute",
+        "method_template": method_template
         }
 
         sys_prompt = SYS_PROMPT.format(**prompt_data)

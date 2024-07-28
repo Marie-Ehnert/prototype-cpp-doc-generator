@@ -1,5 +1,5 @@
 [chat_completion]
-active_model = "deepseek-coder-v2:latest"
+active_model = "llama3"
 base_url = "http://localhost:11434"
 
 [configured_models]
