@@ -104,7 +104,7 @@ class ChatEngine:
 
         if item.parent_name == None:
             parent_prompt = f"\nThis c++ object has no parent relationship with other objects."
-        else: parent_prompt = f"\nThe parent c++ object of this ocject is {item.parent_name}."
+        else: parent_prompt = f"\nThe parent c++ object of this object is {item.parent_name}."
 
         # formats prompts for classes
         if isinstance(item, DocClassItem):
@@ -187,7 +187,7 @@ class ChatEngine:
 
         if item.parent_name != None:
             parent_prompt = f"This c++ object has no parent relationship with other objects."
-        else: parent_prompt = f"The parent c++ object of this ocject is {item.parent_name}."
+        else: parent_prompt = f"The parent c++ object of this object is {item.parent_name}."
        
         methods = "\n".join(item.methods)
         attributes = "\n".join(item.attributes)
