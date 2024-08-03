@@ -27,7 +27,7 @@ The program works as follows, it ...
 __Before__ running the program you need follow these steps!
 
 
-1.  install dependencies with `pip` in your virtual environment or globall
+1.  install dependencies with `pip` in your virtual environment or globally!  
 
     ```
     pip install -r requirements.txt
