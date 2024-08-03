@@ -84,7 +84,7 @@ if you are using an older version of python then enter ...
 ```
     python main.py
 ````
-> CLI Prompts forinput:
+> CLI Prompts for your input:
 
 Now the program will ask you to enter a file path pointing to your desired source file!
 
