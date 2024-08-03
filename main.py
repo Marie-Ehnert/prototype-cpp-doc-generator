@@ -1,3 +1,4 @@
+import json
 from chat_engine import ChatEngine
 from file_handler import FileHandler
 from meta_info import MetaInfo
@@ -11,15 +12,15 @@ with open("chat_config.toml", "r") as f:
         models = config["configured_models"]["large_language_models"]
 
 @click.command()
-@click.option("-f","--cpp-file" ,prompt= "Enter a file path", type=click.Path(exists=True), default="/Users/mehnert/uni-leipzig/sources/ec/EC.cpp")
-@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(models), default=("deepseek-coder-v2:latest"))
+@click.option("-f","--cpp-file" ,prompt= "Enter a file path", type=click.Path(exists=True))
+@click.option("-m", "--llm", prompt= "Choose a large language model",type=click.Choice(models))
 def cli(cpp_file, llm):
     #click library already makes sure that the entered value is a valid file path!
     with open("chat_config.toml", "r") as f:
         config = toml.load(f)
     #sets the model
     config["chat_completion"]["active_model"] = llm
-    #retreives the url for the llm api
+    #retrieves the url for the llm api
     host = config["chat_completion"]["base_url"]
     doygen_path = config["doxygen_config"]["doxyfile_path"]
     doxygen_directory_path = config["doxygen_config"]["doxygen_directory_path"]
@@ -41,9 +42,9 @@ def cli(cpp_file, llm):
     except Exception as e:
          handle_exception(e)
         
-    # to inspect the extracted code analysis
-    # with open("meta.json", "w") as f:
-    #     json.dump(definitions, f)
+    # uncomment to inspect the extracted code analysis
+    #with open("other_cpp_features.json", "w") as f:
+    #   json.dump(definitions, f)
 
 if __name__ == "__main__":
     cli()
