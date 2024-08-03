@@ -17,14 +17,21 @@ The program works as follows, it ...
 * __formats__ a prompt template with the resulting Information for each code component
 * sequentially __sends__ chat completion __API__ __request__ to your local `ollama` models to __generate__ __documentation__
 * __creates__ a markdown documentation file in the folder of the given cpp file in the english language
+***
 
 ###  ⛔️ Known Limitations
 
-Certain C++ language features are not yet supported during static analysis hence some features might not be documented well or not at all! 
+Sadly certain C++ language features are not yet supported during static analysis hence some features might not be documented well or not at all! 
 
-__Please check the generated docs to solve potential errors, hallucinations of the model or add missing components!__ 
+__BUT__ wait there is good part! 
 
-Unsupported language Features:
+The usage of AI dampens _SOME_ limitations of the static analysis feature by inferring missing information or relying more on the provided source code content instead of erroneous extracted information between the prompt instruction statements! 
+
+There is a high chance that faulty analysis is resolved by the power of the trained model your are using! Feel free to experiment with this.
+
+> Please __check__ the generated docs to solve __potential errors, hallucinations__ of the model or __add missing components__! 
+
+### Yet unsupported language features:
 - multiple inheritance
 - generic field declarations of class attributes
 - template declarations of any components
