@@ -47,10 +47,10 @@ def is_function_def_inside_class_def(function_def: dict, class_def: dict) -> boo
 
 def handle_exception(e: Exception):
     if isinstance(e, ResponseError):
-        print("\nLlm excpetion:", e.error, "\nstatus code:", e.status_code)
+        print("\nLlm exception:", e.error, "\nstatus code:", e.status_code)
     elif isinstance(e, TypeError):
         print("\n", e.args[0])
     elif isinstance(e, httpx.ConnectError):
         print("\nLlm exception: you failed to connect to the llm backend, please check that the url is a valid local ollama port")
     else:
-        print("\nunpredicted excpetion occured:", e)
+        print("\nunpredicted exception occurred:", e)

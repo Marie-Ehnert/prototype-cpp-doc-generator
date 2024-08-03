@@ -13,7 +13,6 @@ class MetaInfo:
         self.tree = file_handler.generate_ast_from_source_code(self.code)
         
 
-    # TODO add error handling
     def extract_function(self, node: Node):
         content = node.text.decode("utf-8")
         params = []
@@ -32,17 +31,17 @@ class MetaInfo:
         if function_header_node.type == "reference_declarator": #needed since the immediate declarator field name has two fields 1) reference_declarator and 2) function_declarator
             function_identifier_node = function_header_node.child(1).child_by_field_name("declarator") 
             function_identifier = function_identifier_node.text.decode("utf-8")
-            functions_parameter_node = function_header_node.child(1).child_by_field_name("parameters")
-            if functions_parameter_node:
-                for param in functions_parameter_node.children:
+            function_parameter_node = function_header_node.child(1).child_by_field_name("parameters")
+            if function_parameter_node:
+                for param in function_parameter_node.children:
                     if param.type == "parameter_declaration":
                         params.append(param.text.decode("utf-8"))
         else: 
             function_identifier_node = function_header_node.child_by_field_name("declarator")
             function_identifier = function_identifier_node.text.decode("utf-8")
-            functions_parameter_node = function_header_node.child_by_field_name("parameters")
-            if functions_parameter_node:
-                for param in functions_parameter_node.children:
+            function_parameter_node = function_header_node.child_by_field_name("parameters")
+            if function_parameter_node:
+                for param in function_parameter_node.children:
                     if param.type == "parameter_declaration":
                         params.append(param.text.decode("utf-8"))
 
@@ -58,7 +57,6 @@ class MetaInfo:
             content,
         )
 
-
     def extract_class(self, node: Node):
         attributes = []
         methods = []
@@ -68,6 +66,7 @@ class MetaInfo:
         class_name_node = node.child_by_field_name("name")
         class_name = class_name_node.text.decode("utf8")
 
+        # does not support multiple inheritance with this implementation
         if class_name_node.next_sibling.type == "base_class_clause":
             parent_class_node = class_name_node.next_sibling
             for child in parent_class_node.children:
@@ -163,7 +162,7 @@ class MetaInfo:
                     graph_structure[destination_label] = {"callers": [], "callees": []}
 
                 # Add the relationship
-                # if condition is neccesary because direction of the edge needs to be accounted for
+                # if condition is necessary because direction of the edge needs to be accounted for
                 # edges in DOT files have an attribute called "dir=back" which seems to be not checkable in pydot 
                 # for this reason this simple file path name check shall suffice
                 if not file_path.endswith("icgraph.dot"):
@@ -235,4 +234,4 @@ class MetaInfo:
             self.add_parent_relationship_to_method_definitions_outside_class(definitions)
 
             return definitions
-        except: raise Exception("the global analaysis of your cpp code has thrown an exception!")
+        except: raise Exception("the global analysis of your cpp code has thrown an exception!")

@@ -14,7 +14,7 @@ class FileHandler:
         if self.file_path.endswith(".cpp"):
             source_code_file = open(self.file_path, "r", encoding="utf-8")
             return source_code_file.read()
-        else: raise TypeError("File excpetion: the provided file is not a cpp file!")
+        else: raise TypeError("File exception: the provided file is not a cpp file!")
 
     def generate_ast_from_source_code(self, source_code: str) -> Tree:
         parser = Parser(self.cpp_language)
@@ -22,11 +22,10 @@ class FileHandler:
         return tree
     
     def set_up_doxyfile(self):
-        # Check if Doxyfile exists, if not, create it using default values
+        # Check if Doxyfile exists
         if not os.path.exists(self.doxyfile_path):
-            os.system("doxygen -g")
+            raise TypeError("File exception: the provided Doxfile could not be found!")
 
-        # Read the existing Doxyfile
         with open(self.doxyfile_path, 'r') as file:
             doxyfile_content = file.readlines()
 
