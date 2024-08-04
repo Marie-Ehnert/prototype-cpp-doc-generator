@@ -22,14 +22,14 @@ def cli(cpp_file, llm):
     config["chat_completion"]["active_model"] = llm
     #retrieves the url for the llm api
     host = config["chat_completion"]["base_url"]
-    doygen_path = config["doxygen_config"]["doxyfile_path"]
+    doxygen_path = config["doxygen_config"]["doxyfile_path"]
     doxygen_directory_path = config["doxygen_config"]["doxygen_directory_path"]
     #updates the config with the model input
     with open("chat_config.toml", "w") as f:
         toml.dump(config, f)
 
     try:
-        file_handler = FileHandler(cpp_file, doygen_path)
+        file_handler = FileHandler(cpp_file, doxygen_path, doxygen_directory_path)
         file_handler.set_up_doxyfile()
         file_handler.run_doxygen()
         meta_info = MetaInfo(file_handler)

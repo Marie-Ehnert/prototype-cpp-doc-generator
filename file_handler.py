@@ -1,13 +1,16 @@
 import os
 import subprocess
+import shutil
 import tree_sitter_cpp as tscpp
 from tree_sitter import Language, Parser, Tree
+from pathlib import Path
 
 class FileHandler:
-    def __init__(self, file_path: str, doxyfile_path: str):
+    def __init__(self, file_path: str, doxyfile_path: str, doxyfile_output_directory: str):
         self.file_path = file_path
         self.cpp_language = Language(tscpp.language())
         self.doxyfile_path = doxyfile_path
+        self.doxyfile_output_directory = doxyfile_output_directory
         self.bash_script = "run_doxygen.sh"
 
     def read_source_file(self) -> str:
@@ -25,6 +28,11 @@ class FileHandler:
         # Check if Doxyfile exists
         if not os.path.exists(self.doxyfile_path):
             raise TypeError("File exception: the provided Doxfile could not be found!")
+        
+        # removes older doxygen póutput
+        dirpath = Path(self.doxyfile_output_directory)
+        if dirpath.exists() and dirpath.is_dir():
+            shutil.rmtree(dirpath)
 
         with open(self.doxyfile_path, 'r') as file:
             doxyfile_content = file.readlines()
