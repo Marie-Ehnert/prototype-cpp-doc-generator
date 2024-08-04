@@ -142,7 +142,7 @@ class MetaInfo:
             # Process edges
             for edge in graph.get_edges():
                 source = edge.get_source().strip('"')
-                destination = edge.get_destination().strip('"').replace("\\", "")
+                destination = edge.get_destination().strip('"').replace("\\l", "")
 
                 # Get labels if available, else use node names
                 source_label = graph.get_node(source)[0].get_label()
@@ -150,11 +150,11 @@ class MetaInfo:
                 if not source_label:
                     source_label = source
                 else:
-                    source_label = source_label.strip('"').replace("\\", "")
+                    source_label = source_label.strip('"').replace("\\l", "")
                 if not destination_label:
                     destination_label = destination
                 else:
-                    destination_label = destination_label.strip('"').replace("\\", "")
+                    destination_label = destination_label.strip('"').replace("\\l", "")
 
                 if source_label not in graph_structure:
                     graph_structure[source_label] = {"callers": [], "callees": []}
