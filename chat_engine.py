@@ -72,7 +72,7 @@ class ChatEngine:
             token_count = approximate_token_count(item_prompt)
             pbar.set_description(f"Generating documentation - {item.item_type} {item.obj_name} | token count {token_count}")
             heading = add_markdown_heading(item)
-            if token_count <= self.max_tokens:
+            if token_count <= (self.max_tokens - 1500): # subtraction of an arbitrary amount of tokens so it will leave enough context for the generated response
                 try:
                     llm_response = self.send_request_to_llm(item_prompt, USR_PROMPT)
                     with open(doc_path, "a") as f:
