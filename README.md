@@ -23,7 +23,7 @@ The program works as follows, it ...
 
 Sadly certain C++ language features are not yet supported during static analysis hence some features might not be documented well or not at all! 
 
-__BUT__ wait there is good part! 
+__BUT__ wait there is a good part! 
 
 The usage of AI dampens _SOME_ limitations of the static analysis feature by inferring missing information or relying more on the provided source code content instead of erroneous extracted information between the prompt instruction statements! 
 
